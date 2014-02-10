@@ -11,6 +11,30 @@ import java.util.List;
 import es.uvigo.esei.daa.entities.Person;
 
 public class PeopleDAO extends DAO {
+	public Person get(int id) throws DAOException {
+		try (final Connection conn = this.getConnection()) {
+			final String query = "SELECT * FROM people WHERE id=?";
+			
+			try (PreparedStatement statement = conn.prepareStatement(query)) {
+				statement.setInt(1, id);
+				
+				try (ResultSet result = statement.executeQuery()) {
+					if (result.next()) {
+						return new Person(
+							result.getInt("id"),
+							result.getString("name"),
+							result.getString("surname")
+						);
+					} else {
+						throw new DAOException("Person not found");
+					}
+				}
+			}
+		} catch (SQLException e) {
+			throw new DAOException(e);
+		}
+	}
+	
 	public List<Person> list() throws DAOException {
 		try (final Connection conn = this.getConnection()) {
 			try (Statement statement = conn.createStatement()) {

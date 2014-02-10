@@ -79,14 +79,14 @@ function enableForm() {
 	$(peopleFormQuery + ' input').prop('disabled', false);
 }
 
-function showErrorMessage(jqxhr, textStatus, error) {
-	alert(textStatus + ": " + error);
-}
-
 function resetForm() {
 	$(peopleFormQuery)[0].reset();
 	$(peopleFormQuery + ' input[name="id"]').val('');
 	$('#btnSubmit').val('Crear');
+}
+
+function showErrorMessage(jqxhr, textStatus, error) {
+	alert(textStatus + ": " + error);
 }
 
 function addRowListeners(person) {
@@ -94,6 +94,7 @@ function addRowListeners(person) {
 		personToForm(rowToPerson(person.id));
 		$('input#btnSubmit').val('Modificar');
 	});
+	
 	$('#person-' + person.id + ' a.delete').click(function() {
 		if (confirm('Está a punto de eliminar a una persona. ¿Está seguro de que desea continuar?')) {
 			deletePerson(person.id,

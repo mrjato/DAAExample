@@ -1,9 +1,13 @@
 package es.uvigo.esei.daa.rest;
 
+import javax.ws.rs.DELETE;
+import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -20,7 +24,6 @@ public class People {
 	}
 
 	@GET
-	@Path("/list")
 	public Response list() {
 		try {
 			return Response.ok(this.dao.list(), MediaType.APPLICATION_JSON).build();
@@ -29,11 +32,24 @@ public class People {
 			return Response.serverError().entity(e.getMessage()).build();
 		}
 	}
-
+	
 	@GET
-	@Path("/delete")
+	@Path("/{id}")
+	public Response get(
+		@PathParam("id") int id
+	) {
+		try {
+			return Response.ok(this.dao.get(id), MediaType.APPLICATION_JSON).build();
+		} catch (DAOException e) {
+			e.printStackTrace();
+			return Response.serverError().entity(e.getMessage()).build();
+		}
+	}
+
+	@DELETE
+	@Path("/{id}")
 	public Response delete(
-		@QueryParam("id") int id
+		@PathParam("id") int id
 	) {
 		try {
 			this.dao.delete(id);
@@ -45,12 +61,12 @@ public class People {
 		}
 	}
 	
-	@GET
-	@Path("/modify")
+	@PUT
+	@Path("/{id}")
 	public Response modify(
-		@QueryParam("id") int id, 
-		@QueryParam("name") String name, 
-		@QueryParam("surname") String surname
+		@PathParam("id") int id, 
+		@FormParam("name") String name, 
+		@FormParam("surname") String surname
 	) {
 		try {
 			return Response.ok(this.dao.modify(id, name, surname)).build();
@@ -60,11 +76,10 @@ public class People {
 		}
 	}
 	
-	@GET
-	@Path("/add")
+	@POST
 	public Response add(
-		@QueryParam("name") String name, 
-		@QueryParam("surname") String surname
+		@FormParam("name") String name, 
+		@FormParam("surname") String surname
 	) {
 		try {
 			return Response.ok(this.dao.add(name, surname)).build();
