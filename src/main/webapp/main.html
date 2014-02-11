@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>DAA Example</title>
+</head>
+<body>
+	<div id="people-container">
+		<h1>People</h1>
+		<a id="#logout" href="logout">Logout</a>
+	</div>
+
+	<script type="text/javascript" src="http://code.jquery.com/jquery-2.1.0.js"></script>
+	<script type="text/javascript" src="js/view/people.js"></script>
+	<script type="text/javascript">
+		$(document).ready(function() {
+			insertPeopleForm($('#people-container'));
+			insertPeopleList($('#people-container'));
+			initPeople();
+		});
+	</script>
+</body>
+</html>

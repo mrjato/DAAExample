@@ -50,6 +50,13 @@ function formToPerson() {
 	};
 }
 
+function personToForm(person) {
+	var form = $(peopleFormQuery);
+	form.find('input[name="id"]').val(person.id);
+	form.find('input[name="name"]').val(person.name);
+	form.find('input[name="surname"]').val(person.surname);
+}
+
 function rowToPerson(id) {
 	var row = $('#person-' + id);
 
@@ -58,13 +65,6 @@ function rowToPerson(id) {
 		'name': row.find('td.name').text(),
 		'surname': row.find('td.surname').text()
 	};
-}
-
-function personToForm(person) {
-	var form = $(peopleFormQuery);
-	form.find('input[name="id"]').val(person.id);
-	form.find('input[name="name"]').val(person.name);
-	form.find('input[name="surname"]').val(person.surname);
 }
 
 function isEditing() {
