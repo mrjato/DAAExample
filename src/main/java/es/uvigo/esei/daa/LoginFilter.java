@@ -25,77 +25,89 @@ public class LoginFilter implements Filter {
 		final HttpServletRequest httpRequest = (HttpServletRequest) request;
 		final HttpServletResponse httpResponse = (HttpServletResponse) response;
 		
-		if (isLogoutPath(httpRequest)) {
-			removeCookie(httpResponse);
-			redirectToIndex(httpRequest, httpResponse);
-		} else if (isIndexPath(httpRequest) ||
-			checkLogin(httpRequest, httpResponse) ||
-			checkToken(httpRequest)
-		) {
-			chain.doFilter(request, response);
-		} else {
-			redirectToIndex(httpRequest, httpResponse);
+		try {
+			if (isLogoutPath(httpRequest)) {
+				removeTokenCookie(httpResponse);
+				redirectToIndex(httpRequest, httpResponse);
+			} else if (isIndexPath(httpRequest) || checkToken(httpRequest)) {
+				chain.doFilter(request, response);
+			} else if (checkLogin(httpRequest, httpResponse)) {
+				continueWithRedirect(httpRequest, httpResponse);
+			} else if (isRestPath(httpRequest)) {
+				httpResponse.sendError(HttpServletResponse.SC_FORBIDDEN);				
+			} else {
+				redirectToIndex(httpRequest, httpResponse);
+			}
+		} catch (DAOException e) {
+			httpResponse.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 		}
+	}
+	
+	private boolean isLogoutPath(HttpServletRequest request) {
+		return request.getServletPath().equals("/logout");
+	}
+	
+	private boolean isIndexPath(HttpServletRequest request) {
+		return request.getServletPath().equals("/index.html");
+	}
+	
+	private boolean isRestPath(HttpServletRequest request) {
+		return request.getServletPath().startsWith("/rest");
 	}
 
 	private void redirectToIndex(
-		HttpServletRequest httpRequest,
-		HttpServletResponse httpResponse
+		HttpServletRequest request,
+		HttpServletResponse response
 	) throws IOException {
-		httpResponse.sendRedirect(httpRequest.getContextPath() + "/index.html");
+		response.sendRedirect(request.getContextPath());
+	}
+
+	private void continueWithRedirect(
+		HttpServletRequest request,
+		HttpServletResponse response
+	) throws IOException {
+		String redirectPath = request.getRequestURI();
+		if (request.getQueryString() != null)
+			redirectPath += request.getQueryString();
+		
+		response.sendRedirect(redirectPath);
 	}
 	
-	private void removeCookie(HttpServletResponse httpResponse) {
+	private void removeTokenCookie(HttpServletResponse response) {
 		final Cookie cookie = new Cookie("token", "");
 		cookie.setMaxAge(0);
-		httpResponse.addCookie(cookie);
+		response.addCookie(cookie);
 	}
 	
-	private boolean isLogoutPath(HttpServletRequest httpRequest) {
-		return httpRequest.getServletPath().equals("/logout");
-	}
-	
-	private boolean isIndexPath(HttpServletRequest httpRequest) {
-		return httpRequest.getServletPath().equals("/index.html");
-	}
-	
-	private boolean checkLogin(HttpServletRequest httpRequest, HttpServletResponse response) {
-		final String login = httpRequest.getParameter("login");
-		final String password = httpRequest.getParameter("password");
+	private boolean checkLogin(
+		HttpServletRequest request, 
+		HttpServletResponse response
+	) throws DAOException {
+		final String login = request.getParameter("login");
+		final String password = request.getParameter("password");
 		
 		if (login != null && password != null) {
-			try {
-				final UsersDAO dao = new UsersDAO();
-				final String token = dao.checkLogin(login, password);
-				
-				if (token == null) {
-					return false;
-				} else {
-					response.addCookie(new Cookie("token", token));
-					
-					return true;
-				}
-			} catch (DAOException e) {
-				e.printStackTrace();
+			final String token = new UsersDAO().checkLogin(login, password);
+			
+			if (token == null) {
 				return false;
+			} else {
+				response.addCookie(new Cookie("token", token));
+				
+				return true;
 			}
 		} else {
 			return false;
 		}
 	}
 	
-	private boolean checkToken(HttpServletRequest httpRequest) {
-		final Cookie[] cookies = httpRequest.getCookies();
+	private boolean checkToken(HttpServletRequest request) throws DAOException {
+		final Cookie[] cookies = request.getCookies();
 		
 		if (cookies != null) {
 			for (Cookie cookie : cookies) {
 				if (cookie.getName().equals("token")) {
-					try {
-						return new UsersDAO().checkToken(cookie.getValue()) != null;
-					} catch (DAOException e) {
-						e.printStackTrace();
-						return false;
-					}
+					return new UsersDAO().checkToken(cookie.getValue()) != null;
 				}
 			}
 		}
