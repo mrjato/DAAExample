@@ -17,8 +17,11 @@ public abstract class DAO {
 		Context initContext;
 		try {
 			initContext = new InitialContext();
-			this.dataSource = (DataSource) initContext.lookup(JNDI_NAME);
+			this.dataSource = (DataSource) initContext.lookup(
+				System.getProperty("db.jndi", JNDI_NAME)
+			);
 		} catch (NamingException e) {
+			e.printStackTrace();
 			throw new RuntimeException(e);
 		}
 	}

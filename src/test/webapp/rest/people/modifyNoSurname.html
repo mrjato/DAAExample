@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head profile="http://selenium-ide.openqa.org/profiles/test-case">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<link rel="selenium.base" href="chrome://restclient/content/restclient.html" />
+<title>modifyNoSurname</title>
+</head>
+<body>
+<table cellpadding="1" cellspacing="1" border="1">
+<thead>
+<tr><td rowspan="1" colspan="3">modifyNoSurname</td></tr>
+</thead><tbody>
+<tr>
+	<td>open</td>
+	<td>chrome://restclient/content/restclient.html</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>link=Headers</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>link=Custom Header</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>name=name</td>
+	<td>Cookie</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>name=value</td>
+	<td>token=25d35467c91f0f8bbcc9a4f22bb359170643ccfdf38851599a03a8ffc0756666</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>css=#modal-custom-header &gt; div.modal-footer &gt; input.btn.btn-inverse</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>link=Headers</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>link=Custom Header</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>name=name</td>
+	<td>Content-Type</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>name=value</td>
+	<td>application/x-www-form-urlencoded</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>css=#modal-custom-header &gt; div.modal-footer &gt; input.btn.btn-inverse</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=request-body</td>
+	<td>name=Marta</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>link=PUT</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=request-url</td>
+	<td>http://localhost:9080/DAAExample/rest/people/4</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>id=request-button</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>link=×</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForElementPresent</td>
+	<td>css=span.header-value</td>
+	<td></td>
+</tr>
+<tr>
+	<td>assertText</td>
+	<td>css=span.header-value</td>
+	<td>400 Bad Request</td>
+</tr>
+
+</tbody></table>
+</body>
+</html>
