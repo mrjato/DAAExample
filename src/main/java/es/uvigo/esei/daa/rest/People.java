@@ -40,6 +40,10 @@ public class People {
 	) {
 		try {
 			return Response.ok(this.dao.get(id), MediaType.APPLICATION_JSON).build();
+		} catch (IllegalArgumentException iae) {
+			iae.printStackTrace();
+			return Response.status(Response.Status.BAD_REQUEST)
+				.entity(iae.getMessage()).build();
 		} catch (DAOException e) {
 			e.printStackTrace();
 			return Response.serverError().entity(e.getMessage()).build();
@@ -55,6 +59,10 @@ public class People {
 			this.dao.delete(id);
 			
 			return Response.ok(id).build();
+		} catch (IllegalArgumentException iae) {
+			iae.printStackTrace();
+			return Response.status(Response.Status.BAD_REQUEST)
+				.entity(iae.getMessage()).build();
 		} catch (DAOException e) {
 			e.printStackTrace();
 			return Response.serverError().entity(e.getMessage()).build();
@@ -70,6 +78,10 @@ public class People {
 	) {
 		try {
 			return Response.ok(this.dao.modify(id, name, surname)).build();
+		} catch (IllegalArgumentException iae) {
+			iae.printStackTrace();
+			return Response.status(Response.Status.BAD_REQUEST)
+				.entity(iae.getMessage()).build();
 		} catch (DAOException e) {
 			e.printStackTrace();
 			return Response.serverError().entity(e.getMessage()).build();
@@ -83,6 +95,10 @@ public class People {
 	) {
 		try {
 			return Response.ok(this.dao.add(name, surname)).build();
+		} catch (IllegalArgumentException iae) {
+			iae.printStackTrace();
+			return Response.status(Response.Status.BAD_REQUEST)
+				.entity(iae.getMessage()).build();
 		} catch (DAOException e) {
 			e.printStackTrace();
 			return Response.serverError().entity(e.getMessage()).build();

@@ -11,7 +11,8 @@ import java.util.List;
 import es.uvigo.esei.daa.entities.Person;
 
 public class PeopleDAO extends DAO {
-	public Person get(int id) throws DAOException {
+	public Person get(int id)
+	throws DAOException, IllegalArgumentException {
 		try (final Connection conn = this.getConnection()) {
 			final String query = "SELECT * FROM people WHERE id=?";
 			
@@ -26,7 +27,7 @@ public class PeopleDAO extends DAO {
 							result.getString("surname")
 						);
 					} else {
-						throw new DAOException("Person not found");
+						throw new IllegalArgumentException("Invalid id");
 					}
 				}
 			}
@@ -57,7 +58,8 @@ public class PeopleDAO extends DAO {
 		}
 	}
 	
-	public void delete(int id) throws DAOException {
+	public void delete(int id)
+	throws DAOException, IllegalArgumentException {
 		try (final Connection conn = this.getConnection()) {
 			final String query = "DELETE FROM people WHERE id=?";
 			
@@ -65,7 +67,7 @@ public class PeopleDAO extends DAO {
 				statement.setInt(1, id);
 				
 				if (statement.executeUpdate() != 1) {
-					throw new SQLException("Error inserting value");
+					throw new IllegalArgumentException("Invalid id");
 				}
 			}
 		} catch (SQLException e) {
@@ -73,7 +75,12 @@ public class PeopleDAO extends DAO {
 		}
 	}
 	
-	public Person modify(int id, String name, String surname) throws DAOException {
+	public Person modify(int id, String name, String surname)
+	throws DAOException, IllegalArgumentException {
+		if (name == null || surname == null) {
+			throw new IllegalArgumentException("name and surname can't be null");
+		}
+		
 		try (final Connection conn = this.getConnection()) {
 			final String query = "UPDATE people SET name=?, surname=? WHERE id=?";
 			
@@ -85,7 +92,7 @@ public class PeopleDAO extends DAO {
 				if (statement.executeUpdate() == 1) {
 					return new Person(id, name, surname); 
 				} else {
-					throw new SQLException("Error inserting value");
+					throw new IllegalArgumentException("name and surname can't be null");
 				}
 			}
 		} catch (SQLException e) {
@@ -93,7 +100,12 @@ public class PeopleDAO extends DAO {
 		}
 	}
 	
-	public Person add(String name, String surname) throws DAOException {
+	public Person add(String name, String surname)
+	throws DAOException, IllegalArgumentException {
+		if (name == null || surname == null) {
+			throw new IllegalArgumentException("name and surname can't be null");
+		}
+		
 		try (final Connection conn = this.getConnection()) {
 			final String query = "INSERT INTO people VALUES(null, ?, ?)";
 			
