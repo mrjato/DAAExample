@@ -21,7 +21,6 @@ import es.uvigo.esei.daa.TestUtils;
 public class PeopleWebTest {
 	private static final int DEFAULT_WAIT_TIME = 1;
 	private WebDriver driver;
-	private String baseUrl;
 	private StringBuffer verificationErrors = new StringBuffer();
 	
 	@BeforeClass
@@ -33,13 +32,12 @@ public class PeopleWebTest {
 	public void setUp() throws Exception {
 		TestUtils.initTestDatabase();
 		
+		final String baseUrl = "http://localhost:9080/DAAExample/";
+		
 		driver = new FirefoxDriver();
-		baseUrl = "http://localhost:9080/DAAExample/";
-
 		driver.get(baseUrl);
-		driver.manage().addCookie(
-			new Cookie("token", "bXJqYXRvOm1yamF0bw==")
-		);
+		driver.manage().addCookie(new Cookie("token", "bXJqYXRvOm1yamF0bw=="));
+		
 		// Driver will wait DEFAULT_WAIT_TIME if it doesn't find and element.
 		driver.manage().timeouts().implicitlyWait(DEFAULT_WAIT_TIME, TimeUnit.SECONDS);
 		
