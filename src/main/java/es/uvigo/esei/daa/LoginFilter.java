@@ -38,6 +38,8 @@ public class LoginFilter implements Filter {
 			} else {
 				redirectToIndex(httpRequest, httpResponse);
 			}
+		} catch (IllegalArgumentException iae) {
+			httpResponse.sendError(HttpServletResponse.SC_FORBIDDEN);
 		} catch (DAOException e) {
 			httpResponse.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 		}
@@ -101,7 +103,8 @@ public class LoginFilter implements Filter {
 		}
 	}
 	
-	private boolean checkToken(HttpServletRequest request) throws DAOException {
+	private boolean checkToken(HttpServletRequest request)
+	throws DAOException, IllegalArgumentException {
 		final Cookie[] cookies = request.getCookies();
 		
 		if (cookies != null) {

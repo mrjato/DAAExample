@@ -38,10 +38,7 @@ public class PeopleWebTest {
 
 		driver.get(baseUrl);
 		driver.manage().addCookie(
-			new Cookie(
-				"token",
-				"25d35467c91f0f8bbcc9a4f22bb359170643ccfdf38851599a03a8ffc0756666"
-			)
+			new Cookie("token", "bXJqYXRvOm1yamF0bw==")
 		);
 		// Driver will wait DEFAULT_WAIT_TIME if it doesn't find and element.
 		driver.manage().timeouts().implicitlyWait(DEFAULT_WAIT_TIME, TimeUnit.SECONDS);

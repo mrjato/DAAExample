@@ -5,12 +5,11 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.digest.DigestUtils;
 
 public class UsersDAO extends DAO {
 	public String checkLogin(String login, String password) throws DAOException {
-		final String shaPassword = DigestUtils.sha256Hex(password);
-
 		try (final Connection conn = this.getConnection()) {
 			final String query = "SELECT password FROM users WHERE login=?";
 			
@@ -20,9 +19,10 @@ public class UsersDAO extends DAO {
 				try (ResultSet result = statement.executeQuery()) {
 					if (result.next()) {
 						final String dbPassword = result.getString("password");
+						final String shaPassword = DigestUtils.sha256Hex(password);
 						
 						if (shaPassword.equals(dbPassword)) {
-							return DigestUtils.sha256Hex(login + dbPassword);
+							return new String(Base64.encodeBase64((login + ":" + password).getBytes()));
 						} else {
 							return null;
 						}
@@ -36,16 +36,31 @@ public class UsersDAO extends DAO {
 		}
 	}
 	
-	public String checkToken(String token) throws DAOException {
+	public String checkToken(String token)
+	throws DAOException, IllegalArgumentException {
+		final String decodedToken = new String(Base64.decodeBase64(token.getBytes()));
+		final int colonIndex = decodedToken.indexOf(':');
+		
+		if (colonIndex < 0 || colonIndex == decodedToken.length()-1) {
+			throw new IllegalArgumentException("Invalid token");
+		}
+		
+		final String login = decodedToken.substring(0, decodedToken.indexOf(':'));
+		final String password = DigestUtils.sha256Hex(
+			decodedToken.substring(decodedToken.indexOf(':') + 1)
+		);
+		
 		try (final Connection conn = this.getConnection()) {
-			final String query = "SELECT login FROM users WHERE sha2(concat(login, password), 256)=?";
+			final String query = "SELECT password FROM users WHERE login=?";
 			
 			try (PreparedStatement statement = conn.prepareStatement(query)) {
-				statement.setString(1, token);
+				statement.setString(1, login);
 				
 				try (ResultSet result = statement.executeQuery()) {
 					if (result.next()) {
-						return result.getString("login");
+						final String dbPassword = result.getString("password"); 
+						
+						return password.equals(dbPassword) ? login : null;
 					} else {
 						return null;
 					}
