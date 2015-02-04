@@ -16,10 +16,10 @@ import es.uvigo.esei.daa.dao.PeopleDAO;
 
 @Path("/people")
 @Produces(MediaType.APPLICATION_JSON)
-public class People {
+public class PeopleResource {
 	private final PeopleDAO dao;
 	
-	public People() {
+	public PeopleResource() {
 		this.dao = new PeopleDAO();
 	}
 

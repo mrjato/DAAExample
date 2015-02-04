@@ -48,7 +48,7 @@ public class PeopleTest extends JerseyTest {
 
 	@Override
 	protected Application configure() {
-		return new ResourceConfig(People.class)
+		return new ResourceConfig(PeopleResource.class)
 			.register(JacksonJsonProvider.class)
 			.property("com.sun.jersey.api.json.POJOMappingFeature", Boolean.TRUE);
 	}

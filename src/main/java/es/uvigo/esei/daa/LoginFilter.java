@@ -1,6 +1,7 @@
 package es.uvigo.esei.daa;
 
 import java.io.IOException;
+import java.util.Optional;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -8,6 +9,7 @@ import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
+import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -15,6 +17,7 @@ import javax.servlet.http.HttpServletResponse;
 import es.uvigo.esei.daa.dao.DAOException;
 import es.uvigo.esei.daa.dao.UsersDAO;
 
+@WebFilter(urlPatterns = { "/*", "/logout" })
 public class LoginFilter implements Filter {
 	@Override
 	public void doFilter(
@@ -105,13 +108,14 @@ public class LoginFilter implements Filter {
 	
 	private boolean checkToken(HttpServletRequest request)
 	throws DAOException, IllegalArgumentException {
-		final Cookie[] cookies = request.getCookies();
+		final Cookie[] cookies = Optional.ofNullable(request.getCookies())
+			.orElse(new Cookie[0]);
 		
-		if (cookies != null) {
-			for (Cookie cookie : cookies) {
-				if (cookie.getName().equals("token")) {
-					return new UsersDAO().checkToken(cookie.getValue()) != null;
-				}
+		for (Cookie cookie : cookies) {
+			if ("token".equals(cookie.getName())) {
+				final String token = new UsersDAO().checkToken(cookie.getValue());
+				
+				return token != null;
 			}
 		}
 		
