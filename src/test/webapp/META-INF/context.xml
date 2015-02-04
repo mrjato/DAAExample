@@ -25,6 +25,6 @@
 		maxActive="100" maxIdle="30" maxWait="10000" 
 		username="daa" password="daa"
 		driverClassName="com.mysql.jdbc.Driver"
-		url="jdbc:mysql://localhost:3306/daaexample"
+		url="jdbc:mysql://localhost:3306/daaexampletest"
 	/>
 </Context>

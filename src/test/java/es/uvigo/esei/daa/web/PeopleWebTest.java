@@ -26,6 +26,7 @@ public class PeopleWebTest {
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
 		TestUtils.createFakeContext();
+		TestUtils.clearTestDatabase();
 	}
 	
 	@Before

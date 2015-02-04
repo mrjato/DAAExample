@@ -1,7 +1,7 @@
 package es.uvigo.esei.daa.rest;
 
-import static es.uvigo.esei.daa.TestUtils.assertOkStatus;
 import static es.uvigo.esei.daa.TestUtils.assertBadRequestStatus;
+import static es.uvigo.esei.daa.TestUtils.assertOkStatus;
 import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
@@ -14,7 +14,6 @@ import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import org.codehaus.jackson.jaxrs.JacksonJsonProvider;
 import org.glassfish.jersey.client.ClientConfig;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.test.JerseyTest;
@@ -22,6 +21,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
+import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 
 import es.uvigo.esei.daa.TestUtils;
 import es.uvigo.esei.daa.entities.Person;
