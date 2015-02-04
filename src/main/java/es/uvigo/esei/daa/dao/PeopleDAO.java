@@ -7,10 +7,14 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import es.uvigo.esei.daa.entities.Person;
 
 public class PeopleDAO extends DAO {
+	private final static Logger LOG = Logger.getLogger("PeopleDAO");
+	
 	public Person get(int id)
 	throws DAOException, IllegalArgumentException {
 		try (final Connection conn = this.getConnection()) {
@@ -32,6 +36,7 @@ public class PeopleDAO extends DAO {
 				}
 			}
 		} catch (SQLException e) {
+			LOG.log(Level.SEVERE, "Error getting a person", e);
 			throw new DAOException(e);
 		}
 	}
@@ -54,6 +59,7 @@ public class PeopleDAO extends DAO {
 				}
 			}
 		} catch (SQLException e) {
+			LOG.log(Level.SEVERE, "Error listing people", e);
 			throw new DAOException(e);
 		}
 	}
@@ -71,6 +77,7 @@ public class PeopleDAO extends DAO {
 				}
 			}
 		} catch (SQLException e) {
+			LOG.log(Level.SEVERE, "Error deleting a person", e);
 			throw new DAOException(e);
 		}
 	}
@@ -96,6 +103,7 @@ public class PeopleDAO extends DAO {
 				}
 			}
 		} catch (SQLException e) {
+			LOG.log(Level.SEVERE, "Error modifying a person", e);
 			throw new DAOException();
 		}
 	}
@@ -118,14 +126,17 @@ public class PeopleDAO extends DAO {
 						if (resultKeys.next()) {
 							return new Person(resultKeys.getInt(1), name, surname);
 						} else {
+							LOG.log(Level.SEVERE, "Error retrieving inserted id");
 							throw new SQLException("Error retrieving inserted id");
 						}
 					}
 				} else {
+					LOG.log(Level.SEVERE, "Error inserting value");
 					throw new SQLException("Error inserting value");
 				}
 			}
 		} catch (SQLException e) {
+			LOG.log(Level.SEVERE, "Error adding a person", e);
 			throw new DAOException(e);
 		}
 	}

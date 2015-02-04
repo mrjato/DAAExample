@@ -1,5 +1,8 @@
 package es.uvigo.esei.daa.rest;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import javax.ws.rs.DELETE;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
@@ -17,6 +20,8 @@ import es.uvigo.esei.daa.dao.PeopleDAO;
 @Path("/people")
 @Produces(MediaType.APPLICATION_JSON)
 public class PeopleResource {
+	private final static Logger LOG = Logger.getLogger("PeopleResource");
+	
 	private final PeopleDAO dao;
 	
 	public PeopleResource() {
@@ -28,7 +33,7 @@ public class PeopleResource {
 		try {
 			return Response.ok(this.dao.list(), MediaType.APPLICATION_JSON).build();
 		} catch (DAOException e) {
-			e.printStackTrace();
+			LOG.log(Level.SEVERE, "Error listing people", e);
 			return Response.serverError().entity(e.getMessage()).build();
 		}
 	}
@@ -45,7 +50,7 @@ public class PeopleResource {
 			return Response.status(Response.Status.BAD_REQUEST)
 				.entity(iae.getMessage()).build();
 		} catch (DAOException e) {
-			e.printStackTrace();
+			LOG.log(Level.SEVERE, "Error getting a person", e);
 			return Response.serverError().entity(e.getMessage()).build();
 		}
 	}
@@ -64,7 +69,7 @@ public class PeopleResource {
 			return Response.status(Response.Status.BAD_REQUEST)
 				.entity(iae.getMessage()).build();
 		} catch (DAOException e) {
-			e.printStackTrace();
+			LOG.log(Level.SEVERE, "Error deleting a person", e);
 			return Response.serverError().entity(e.getMessage()).build();
 		}
 	}
@@ -83,7 +88,7 @@ public class PeopleResource {
 			return Response.status(Response.Status.BAD_REQUEST)
 				.entity(iae.getMessage()).build();
 		} catch (DAOException e) {
-			e.printStackTrace();
+			LOG.log(Level.SEVERE, "Error modifying a person", e);
 			return Response.serverError().entity(e.getMessage()).build();
 		}
 	}
@@ -100,7 +105,7 @@ public class PeopleResource {
 			return Response.status(Response.Status.BAD_REQUEST)
 				.entity(iae.getMessage()).build();
 		} catch (DAOException e) {
-			e.printStackTrace();
+			LOG.log(Level.SEVERE, "Error adding a person", e);
 			return Response.serverError().entity(e.getMessage()).build();
 		}
 	}

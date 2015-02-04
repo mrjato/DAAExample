@@ -4,11 +4,15 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.digest.DigestUtils;
 
 public class UsersDAO extends DAO {
+	private final static Logger LOG = Logger.getLogger("UsersDAO");
+	
 	public String checkLogin(String login, String password) throws DAOException {
 		try (final Connection conn = this.getConnection()) {
 			final String query = "SELECT password FROM users WHERE login=?";
@@ -32,6 +36,7 @@ public class UsersDAO extends DAO {
 				}
 			}
 		} catch (SQLException e) {
+			LOG.log(Level.SEVERE, "Error checking login", e);
 			throw new DAOException(e);
 		}
 	}
@@ -67,6 +72,7 @@ public class UsersDAO extends DAO {
 				}
 			}
 		} catch (SQLException e) {
+			LOG.log(Level.SEVERE, "Error checking token", e);
 			throw new DAOException(e);
 		}
 	}
