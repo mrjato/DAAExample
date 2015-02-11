@@ -15,15 +15,27 @@ import org.springframework.mock.jndi.SimpleNamingContextBuilder;
 
 
 public final class TestUtils {
+	private final static SimpleNamingContextBuilder CONTEXT_BUILDER
+		= new SimpleNamingContextBuilder();
+	
 	private TestUtils() {}
-
+	
 	public static void createFakeContext() throws NamingException {
-		final SimpleNamingContextBuilder builder = new SimpleNamingContextBuilder();
-		builder.bind("java:/comp/env/jdbc/daaexample", createTestingDataSource());
-		builder.activate();
+		createFakeContext(createTestingDataSource());
 	}
 
-	private static BasicDataSource createTestingDataSource() {
+	public static void createFakeContext(DataSource datasource)
+	throws IllegalStateException, NamingException {
+		CONTEXT_BUILDER.bind("java:/comp/env/jdbc/daaexample", datasource);
+		CONTEXT_BUILDER.activate();
+	}
+	
+	public static void clearContextBuilder() {
+		CONTEXT_BUILDER.clear();
+		CONTEXT_BUILDER.deactivate();
+	}
+
+	public static BasicDataSource createTestingDataSource() {
 		final BasicDataSource ds = new BasicDataSource();
 		ds.setDriverClassName("com.mysql.jdbc.Driver");
 		ds.setUrl("jdbc:mysql://localhost:3306/daaexampletest?allowMultiQueries=true");
@@ -33,6 +45,10 @@ public final class TestUtils {
 		ds.setMaxIdle(30);
 		ds.setMaxWait(10000);
 		return ds;
+	}
+
+	public static BasicDataSource createEmptyDataSource() {
+		return new BasicDataSource();
 	}
 	
 	public static void clearTestDatabase() throws SQLException {

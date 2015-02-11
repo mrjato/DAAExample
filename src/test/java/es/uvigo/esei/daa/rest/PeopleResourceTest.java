@@ -27,7 +27,7 @@ import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 import es.uvigo.esei.daa.TestUtils;
 import es.uvigo.esei.daa.entities.Person;
 
-public class PeopleTest extends JerseyTest {
+public class PeopleResourceTest extends JerseyTest {
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
 		TestUtils.createFakeContext();

@@ -25,13 +25,18 @@ public class PeopleResource {
 	private final PeopleDAO dao;
 	
 	public PeopleResource() {
-		this.dao = new PeopleDAO();
+		this(new PeopleDAO());
+	}
+	
+	// For testing purposes
+	PeopleResource(PeopleDAO dao) {
+		this.dao = dao;
 	}
 
 	@GET
 	public Response list() {
 		try {
-			return Response.ok(this.dao.list(), MediaType.APPLICATION_JSON).build();
+			return Response.ok(this.dao.list()).build();
 		} catch (DAOException e) {
 			LOG.log(Level.SEVERE, "Error listing people", e);
 			return Response.serverError().entity(e.getMessage()).build();
@@ -46,7 +51,7 @@ public class PeopleResource {
 		try {
 			return Response.ok(this.dao.get(id), MediaType.APPLICATION_JSON).build();
 		} catch (IllegalArgumentException iae) {
-			iae.printStackTrace();
+			LOG.log(Level.FINE, "Invalid person id in get method", iae);
 			return Response.status(Response.Status.BAD_REQUEST)
 				.entity(iae.getMessage()).build();
 		} catch (DAOException e) {
@@ -65,7 +70,7 @@ public class PeopleResource {
 			
 			return Response.ok(id).build();
 		} catch (IllegalArgumentException iae) {
-			iae.printStackTrace();
+			LOG.log(Level.FINE, "Invalid person id in delete method", iae);
 			return Response.status(Response.Status.BAD_REQUEST)
 				.entity(iae.getMessage()).build();
 		} catch (DAOException e) {
@@ -84,7 +89,7 @@ public class PeopleResource {
 		try {
 			return Response.ok(this.dao.modify(id, name, surname)).build();
 		} catch (IllegalArgumentException iae) {
-			iae.printStackTrace();
+			LOG.log(Level.FINE, "Invalid person id in modify method", iae);
 			return Response.status(Response.Status.BAD_REQUEST)
 				.entity(iae.getMessage()).build();
 		} catch (DAOException e) {
@@ -101,7 +106,7 @@ public class PeopleResource {
 		try {
 			return Response.ok(this.dao.add(name, surname)).build();
 		} catch (IllegalArgumentException iae) {
-			iae.printStackTrace();
+			LOG.log(Level.FINE, "Invalid person id in add method", iae);
 			return Response.status(Response.Status.BAD_REQUEST)
 				.entity(iae.getMessage()).build();
 		} catch (DAOException e) {

@@ -17,10 +17,10 @@ public class UsersDAO extends DAO {
 		try (final Connection conn = this.getConnection()) {
 			final String query = "SELECT password FROM users WHERE login=?";
 			
-			try (PreparedStatement statement = conn.prepareStatement(query)) {
+			try (final PreparedStatement statement = conn.prepareStatement(query)) {
 				statement.setString(1, login);
 				
-				try (ResultSet result = statement.executeQuery()) {
+				try (final ResultSet result = statement.executeQuery()) {
 					if (result.next()) {
 						final String dbPassword = result.getString("password");
 						final String shaPassword = encodeSha256(password);
@@ -56,10 +56,10 @@ public class UsersDAO extends DAO {
 		try (final Connection conn = this.getConnection()) {
 			final String query = "SELECT password FROM users WHERE login=?";
 			
-			try (PreparedStatement statement = conn.prepareStatement(query)) {
+			try (final PreparedStatement statement = conn.prepareStatement(query)) {
 				statement.setString(1, login);
 				
-				try (ResultSet result = statement.executeQuery()) {
+				try (final ResultSet result = statement.executeQuery()) {
 					if (result.next()) {
 						final String dbPassword = result.getString("password"); 
 						

@@ -15,7 +15,9 @@ import es.uvigo.esei.daa.rest.PeopleResource;
 public class DAAExampleApplication extends Application {
 	@Override
 	public Set<Class<?>> getClasses() {
-		return new HashSet<>(Arrays.asList(PeopleResource.class));
+		return new HashSet<>(Arrays.asList(
+			PeopleResource.class
+		));
 	}
 	
 	@Override

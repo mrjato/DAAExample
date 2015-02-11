@@ -14,7 +14,7 @@ public abstract class DAO {
 	private final static Logger LOG = Logger.getLogger("DAO");
 	private final static String JNDI_NAME = "java:/comp/env/jdbc/daaexample"; 
 	
-	private final DataSource dataSource;
+	private DataSource dataSource;
 	
 	public DAO() {
 		Context initContext;

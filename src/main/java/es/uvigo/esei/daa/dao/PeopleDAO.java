@@ -20,10 +20,10 @@ public class PeopleDAO extends DAO {
 		try (final Connection conn = this.getConnection()) {
 			final String query = "SELECT * FROM people WHERE id=?";
 			
-			try (PreparedStatement statement = conn.prepareStatement(query)) {
+			try (final PreparedStatement statement = conn.prepareStatement(query)) {
 				statement.setInt(1, id);
 				
-				try (ResultSet result = statement.executeQuery()) {
+				try (final ResultSet result = statement.executeQuery()) {
 					if (result.next()) {
 						return new Person(
 							result.getInt("id"),
@@ -43,8 +43,10 @@ public class PeopleDAO extends DAO {
 	
 	public List<Person> list() throws DAOException {
 		try (final Connection conn = this.getConnection()) {
-			try (Statement statement = conn.createStatement()) {
-				try (ResultSet result = statement.executeQuery("SELECT * FROM people")) {
+			final String query = "SELECT * FROM people";
+			
+			try (final PreparedStatement statement = conn.prepareStatement(query)) {
+				try (final ResultSet result = statement.executeQuery()) {
 					final List<Person> people = new LinkedList<>();
 					
 					while (result.next()) {
@@ -69,7 +71,7 @@ public class PeopleDAO extends DAO {
 		try (final Connection conn = this.getConnection()) {
 			final String query = "DELETE FROM people WHERE id=?";
 			
-			try (PreparedStatement statement = conn.prepareStatement(query)) {
+			try (final PreparedStatement statement = conn.prepareStatement(query)) {
 				statement.setInt(1, id);
 				
 				if (statement.executeUpdate() != 1) {
@@ -88,7 +90,7 @@ public class PeopleDAO extends DAO {
 			throw new IllegalArgumentException("name and surname can't be null");
 		}
 		
-		try (final Connection conn = this.getConnection()) {
+		try (Connection conn = this.getConnection()) {
 			final String query = "UPDATE people SET name=?, surname=? WHERE id=?";
 			
 			try (PreparedStatement statement = conn.prepareStatement(query)) {
@@ -114,7 +116,7 @@ public class PeopleDAO extends DAO {
 			throw new IllegalArgumentException("name and surname can't be null");
 		}
 		
-		try (final Connection conn = this.getConnection()) {
+		try (Connection conn = this.getConnection()) {
 			final String query = "INSERT INTO people VALUES(null, ?, ?)";
 			
 			try (PreparedStatement statement = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
