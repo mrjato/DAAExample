@@ -30,14 +30,11 @@ public abstract class DatabaseQueryUnitTest {
 	@BeforeClass
 	public static void setUpBeforeClass()
 	throws Exception {
-		TestUtils.clearTestDatabase();
 		TestUtils.clearContextBuilder();
 	}
 
 	@Before
 	public void setUp() throws Exception {
-		TestUtils.initTestDatabase();
-		
 		datasource = createMock(DataSource.class);
 		connection = createMock(Connection.class);
 		statement = createNiceMock(PreparedStatement.class);
@@ -70,7 +67,6 @@ public abstract class DatabaseQueryUnitTest {
 	
 	@After
 	public void tearDown() throws Exception {
-		TestUtils.clearTestDatabase();
 		TestUtils.clearContextBuilder();
 		
 		try {
