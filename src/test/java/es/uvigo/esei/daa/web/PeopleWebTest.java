@@ -1,133 +1,119 @@
 package es.uvigo.esei.daa.web;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.assertFalse;
 
 import java.util.concurrent.TimeUnit;
 
+import javax.sql.DataSource;
+
 import org.junit.After;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
-import org.openqa.selenium.By;
+import org.junit.runner.RunWith;
 import org.openqa.selenium.Cookie;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestExecutionListeners;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import es.uvigo.esei.daa.TestUtils;
+import com.github.springtestdbunit.DbUnitTestExecutionListener;
+import com.github.springtestdbunit.annotation.DatabaseSetup;
+import com.github.springtestdbunit.annotation.ExpectedDatabase;
 
+import es.uvigo.esei.daa.entities.Person;
+import es.uvigo.esei.daa.listeners.ApplicationContextBinding;
+import es.uvigo.esei.daa.listeners.ApplicationContextJndiBindingTestExecutionListener;
+import es.uvigo.esei.daa.listeners.DbManagement;
+import es.uvigo.esei.daa.listeners.DbManagementTestExecutionListener;
+import es.uvigo.esei.daa.web.pages.MainPage;
+
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration("classpath:contexts/hsql-context.xml")
+@TestExecutionListeners({
+	DbUnitTestExecutionListener.class,
+	DbManagementTestExecutionListener.class,
+	ApplicationContextJndiBindingTestExecutionListener.class
+})
+@ApplicationContextBinding(
+	jndiUrl = "java:/comp/env/jdbc/daaexample",
+	type = DataSource.class
+)
+@DbManagement(
+	create = "classpath:db/hsqldb.sql",
+	drop = "classpath:db/hsqldb-drop.sql"
+)
+@DatabaseSetup("/datasets/dataset.xml")
+@ExpectedDatabase("/datasets/dataset.xml")
 public class PeopleWebTest {
 	private static final int DEFAULT_WAIT_TIME = 1;
-	private WebDriver driver;
-	private StringBuffer verificationErrors = new StringBuffer();
 	
-	@BeforeClass
-	public static void setUpBeforeClass() throws Exception {
-		TestUtils.createFakeContext();
-		TestUtils.clearTestDatabase();
-	}
+	private WebDriver driver;
+	private MainPage mainPage;
 	
 	@Before
 	public void setUp() throws Exception {
-		TestUtils.initTestDatabase();
-		
 		final String baseUrl = "http://localhost:9080/DAAExample/";
 		
 		driver = new FirefoxDriver();
 		driver.get(baseUrl);
-		driver.manage().addCookie(new Cookie("token", "bXJqYXRvOm1yamF0bw=="));
+		
+		// Login as "admin:admin"
+		driver.manage().addCookie(new Cookie("token", "YWRtaW46YWRtaW4="));
 		
 		// Driver will wait DEFAULT_WAIT_TIME if it doesn't find and element.
 		driver.manage().timeouts().implicitlyWait(DEFAULT_WAIT_TIME, TimeUnit.SECONDS);
 		
-		driver.get(baseUrl + "main.html");
-		driver.findElement(By.id("people-list"));
+		mainPage = new MainPage(driver, baseUrl);
+		mainPage.navigateTo();
 	}
 	
 	@After
 	public void tearDown() throws Exception {
-		TestUtils.clearTestDatabase();
-		
 		driver.quit();
-		String verificationErrorString = verificationErrors.toString();
-		if (!"".equals(verificationErrorString)) {
-			fail(verificationErrorString);
-		}
+		driver = null;
+		mainPage = null;
 	}
 
 	@Test
 	public void testList() throws Exception {
-		verifyXpathCount("//tr", 11);
+		assertEquals(10, mainPage.countPeople());
 	}
 
 	@Test
+	@ExpectedDatabase("/datasets/dataset-add.xml")
 	public void testAdd() throws Exception {
-		final String name = "Hola";
-		final String surname = "Mundo";
+		final String name = "John";
+		final String surname = "Doe";
 		
-		driver.findElement(By.name("name")).clear();
-		driver.findElement(By.name("name")).sendKeys(name);
-		driver.findElement(By.name("surname")).clear();
-		driver.findElement(By.name("surname")).sendKeys(surname);
-		driver.findElement(By.id("btnSubmit")).click();
-		driver.findElement(By.xpath("//td[text()='Hola']"));
+		final Person newPerson = mainPage.addPerson(name, surname);
 		
-		assertEquals(name, 
-			driver.findElement(By.cssSelector("tr:last-child > td.name")).getText()
-		);
-		assertEquals(surname, 
-			driver.findElement(By.cssSelector("tr:last-child > td.surname")).getText()
-		);
+		assertEquals(name, newPerson.getName());
+		assertEquals(surname, newPerson.getSurname());
 	}
 
 	@Test
+	@ExpectedDatabase("/datasets/dataset-modify.xml")
 	public void testEdit() throws Exception {
-		final String name = "Xián";
-		final String surname = "Ximénez";
+		final int id = 5;
+		final String newName = "John";
+		final String newSurname = "Doe";
+
+		mainPage.editPerson(id, "John", "Doe");
 		
-		final String trId = driver.findElement(By.xpath("//tr[last()]")).getAttribute("id");
-		driver.findElement(By.xpath("//tr[@id='" + trId + "']//a[text()='Edit']")).click();
-		driver.findElement(By.name("name")).clear();
-		driver.findElement(By.name("name")).sendKeys(name);
-		driver.findElement(By.name("surname")).clear();
-		driver.findElement(By.name("surname")).sendKeys(surname);
-		driver.findElement(By.id("btnSubmit")).click();
-		waitForTextInElement(By.name("name"), "");
-		waitForTextInElement(By.name("surname"), "");
+		final Person person = mainPage.getPerson(id);
 		
-		assertEquals(name, 
-			driver.findElement(By.xpath("//tr[@id='" + trId + "']/td[@class='name']")).getText()
-		);
-		assertEquals(surname, 
-			driver.findElement(By.xpath("//tr[@id='" + trId + "']/td[@class='surname']")).getText()
-		);
+		assertEquals(id, person.getId());
+		assertEquals(newName, person.getName());
+		assertEquals(newSurname, person.getSurname());
 	}
 
 	@Test
+	@ExpectedDatabase("/datasets/dataset-delete.xml")
 	public void testDelete() throws Exception {
-		final String trId = driver.findElement(By.xpath("//tr[last()]")).getAttribute("id");
-		driver.findElement(By.xpath("(//a[contains(text(),'Delete')])[last()]")).click();
-		driver.switchTo().alert().accept();
-		waitUntilNotFindElement(By.id(trId));
-	}
-	
-	private boolean waitUntilNotFindElement(By by) {
-	    return new WebDriverWait(driver, DEFAULT_WAIT_TIME)
-	    	.until(ExpectedConditions.invisibilityOfElementLocated(by));
-	}
-	
-	private boolean waitForTextInElement(By by, String text) {
-	    return new WebDriverWait(driver, DEFAULT_WAIT_TIME)
-	    	.until(ExpectedConditions.textToBePresentInElementLocated(by, text));
-	}
-
-	private void verifyXpathCount(String xpath, int count) {
-		try {
-			assertEquals(count, driver.findElements(By.xpath(xpath)).size());
-		} catch (Error e) {
-			verificationErrors.append(e.toString());
-		}
+		mainPage.deletePerson(4);
+		
+		assertFalse(mainPage.hasPerson(4));
 	}
 }

@@ -6,14 +6,33 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Base64;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * DAO class for managing the users of the system.
+ * 
+ * @author Miguel Reboiro Jato
+ */
 public class UsersDAO extends DAO {
-	private final static Logger LOG = Logger.getLogger("UsersDAO");
+	private final static Logger LOG = Logger.getLogger(UsersDAO.class.getName());
 	
-	public String checkLogin(String login, String password) throws DAOException {
+	private final static String SALT = "daaexample-";
+
+	/**
+	 * Checks if the provided credentials (login and password) correspond with a
+	 * valid user registered in the system.
+	 * 
+	 * <p>The password is stored in the system "salted" and encoded with the
+	 * SHA-256 algorithm.</p>
+	 * 
+	 * @param login the login of the user.
+	 * @param password the password of the user.
+	 * @return {@code true} if the credentials are valid. {@code false}
+	 * otherwise.
+	 * @throws DAOException if an error happens while checking the credentials.
+	 */
+	public boolean checkLogin(String login, String password) throws DAOException {
 		try (final Connection conn = this.getConnection()) {
 			final String query = "SELECT password FROM users WHERE login=?";
 			
@@ -23,15 +42,11 @@ public class UsersDAO extends DAO {
 				try (final ResultSet result = statement.executeQuery()) {
 					if (result.next()) {
 						final String dbPassword = result.getString("password");
-						final String shaPassword = encodeSha256(password);
+						final String shaPassword = encodeSha256(SALT + password);
 						
-						if (shaPassword.equals(dbPassword)) {
-							return encodeBase64(login + ":" + password);
-						} else {
-							return null;
-						}
+						return shaPassword.equals(dbPassword);
 					} else {
-						return null;
+						return false;
 					}
 				}
 			}
@@ -39,48 +54,6 @@ public class UsersDAO extends DAO {
 			LOG.log(Level.SEVERE, "Error checking login", e);
 			throw new DAOException(e);
 		}
-	}
-	
-	public String checkToken(String token)
-	throws DAOException, IllegalArgumentException {
-		final String decodedToken = decodeBase64(token);
-		final int colonIndex = decodedToken.indexOf(':');
-		
-		if (colonIndex < 0 || colonIndex == decodedToken.length()-1) {
-			throw new IllegalArgumentException("Invalid token");
-		}
-		
-		final String login = decodedToken.substring(0, decodedToken.indexOf(':'));
-		final String password = encodeSha256(decodedToken.substring(decodedToken.indexOf(':') + 1));
-		
-		try (final Connection conn = this.getConnection()) {
-			final String query = "SELECT password FROM users WHERE login=?";
-			
-			try (final PreparedStatement statement = conn.prepareStatement(query)) {
-				statement.setString(1, login);
-				
-				try (final ResultSet result = statement.executeQuery()) {
-					if (result.next()) {
-						final String dbPassword = result.getString("password"); 
-						
-						return password.equals(dbPassword) ? login : null;
-					} else {
-						return null;
-					}
-				}
-			}
-		} catch (SQLException e) {
-			LOG.log(Level.SEVERE, "Error checking token", e);
-			throw new DAOException(e);
-		}
-	}
-	
-	private final static String decodeBase64(String text) {
-		return new String(Base64.getDecoder().decode(text.getBytes()));
-	}
-	
-	private final static String encodeBase64(String text) {
-		return Base64.getEncoder().encodeToString(text.getBytes());
 	}
 	
 	private final static String encodeSha256(String text) {

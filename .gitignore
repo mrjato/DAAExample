@@ -1,6 +1,16 @@
-/bin
-/target
-/assembly
+# General
+/bak
+
+# Eclipse
 .project
 .classpath
 .settings
+
+# Maven
+/bin
+/target
+/assembly
+
+# Testing
+/servers
+C:\\nppdf32Log\\debuglog.txt

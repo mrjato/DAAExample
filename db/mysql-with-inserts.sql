@@ -9,7 +9,7 @@ CREATE TABLE `daaexample`.`people` (
 
 CREATE TABLE `daaexample`.`users` (
 	`login` varchar(100) NOT NULL,
-	`password` varbinary(64) DEFAULT NULL,
+	`password` varchar(64) DEFAULT NULL,
 	PRIMARY KEY (`login`)
 );
 
@@ -24,4 +24,4 @@ INSERT INTO `daaexample`.`people` (`id`,`name`,`surname`) VALUES (0,'María','Nu
 INSERT INTO `daaexample`.`people` (`id`,`name`,`surname`) VALUES (0,'Alba','Fernández');
 INSERT INTO `daaexample`.`people` (`id`,`name`,`surname`) VALUES (0,'Asunción','Jiménez');
 
-INSERT INTO `daaexample`.`users` (`login`,`password`) VALUES ('mrjato', '59189332a4abf8ddf66fde068cad09eb563b4bd974f7663d97ff6852a7910a73');
+INSERT INTO `daaexample`.`users` (`login`,`password`) VALUES ('admin', '0b893644f3b2097d004c58d585e784ac92dd1356d25158a298573ad54ab2d15d');

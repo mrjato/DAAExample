@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE dataset SYSTEM "dataset.dtd">
+
+<dataset>
+	<people id="1" name="Antón" surname="Álvarez" />
+	<people id="2" name="Ana" surname="Amargo" />
+	<people id="3" name="Manuel" surname="Martínez" />
+	<people id="4" name="María" surname="Márquez" />
+	<people id="5" name="Lorenzo" surname="López" />
+	<people id="6" name="Laura" surname="Laredo" />
+	<people id="7" name="Perico" surname="Palotes" />
+	<people id="8" name="Patricia" surname="Pérez" />
+	<people id="9" name="Julia" surname="Justa" />
+	<people id="10" name="Juan" surname="Jiménez" />
+
+	<users login="admin" password="0b893644f3b2097d004c58d585e784ac92dd1356d25158a298573ad54ab2d15d" />
+</dataset>

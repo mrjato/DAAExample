@@ -221,33 +221,18 @@ public class PeopleDAOUnitTest extends DatabaseQueryUnitTest {
 		replayAll();
 		
 		final PeopleDAO peopleDAO = new PeopleDAO();
-		final Person newPerson = peopleDAO.modify(
-			person.getId(), person.getName(), person.getSurname()
-		);
-		
-		assertEquals(person, newPerson);
+		peopleDAO.modify(person);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
-	public void testModifyNullName() throws Exception {
+	public void testModifyNullPerson() throws Exception {
 		replayAll();
 		
 		final PeopleDAO peopleDAO = new PeopleDAO();
 		
 		resetAll(); // No expectations
 		
-		peopleDAO.modify(1, null, "Pepe");
-	}
-
-	@Test(expected = IllegalArgumentException.class)
-	public void testModifyNullSurname() throws Exception {
-		replayAll();
-		
-		final PeopleDAO peopleDAO = new PeopleDAO();
-		
-		resetAll(); // No expectations
-		
-		peopleDAO.modify(1, "Pepe", null);
+		peopleDAO.modify(null);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
@@ -257,7 +242,7 @@ public class PeopleDAOUnitTest extends DatabaseQueryUnitTest {
 		replayAll();
 		
 		final PeopleDAO peopleDAO = new PeopleDAO();
-		peopleDAO.modify(1, "Paco", "Pérez");
+		peopleDAO.modify(new Person(1, "Paco", "Pérez"));
 	}
 	
 	@Test(expected = DAOException.class)
@@ -267,6 +252,6 @@ public class PeopleDAOUnitTest extends DatabaseQueryUnitTest {
 		replayAll();
 		
 		final PeopleDAO peopleDAO = new PeopleDAO();
-		peopleDAO.modify(1, "Paco", "Pérez");
+		peopleDAO.modify(new Person(1, "Paco", "Pérez"));
 	}
 }

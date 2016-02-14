@@ -9,7 +9,7 @@ CREATE TABLE `daaexample`.`people` (
 
 CREATE TABLE `daaexample`.`users` (
 	`login` varchar(100) NOT NULL,
-	`password` varbinary(64) DEFAULT NULL,
+	`password` varchar(64) DEFAULT NULL,
 	PRIMARY KEY (`login`)
 );
 

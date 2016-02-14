@@ -2,33 +2,48 @@ package es.uvigo.esei.daa.dao;
 
 import static org.junit.Assert.assertEquals;
 
-import org.junit.After;
+import javax.sql.DataSource;
+
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestExecutionListeners;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import es.uvigo.esei.daa.TestUtils;
+import com.github.springtestdbunit.DbUnitTestExecutionListener;
+import com.github.springtestdbunit.annotation.DatabaseSetup;
+import com.github.springtestdbunit.annotation.ExpectedDatabase;
+
 import es.uvigo.esei.daa.entities.Person;
+import es.uvigo.esei.daa.listeners.ApplicationContextBinding;
+import es.uvigo.esei.daa.listeners.ApplicationContextJndiBindingTestExecutionListener;
+import es.uvigo.esei.daa.listeners.DbManagement;
+import es.uvigo.esei.daa.listeners.DbManagementTestExecutionListener;
 
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration("classpath:contexts/mem-context.xml")
+@TestExecutionListeners({
+	DbUnitTestExecutionListener.class,
+	DbManagementTestExecutionListener.class,
+	ApplicationContextJndiBindingTestExecutionListener.class
+})
+@ApplicationContextBinding(
+	jndiUrl = "java:/comp/env/jdbc/daaexample",
+	type = DataSource.class
+)
+@DbManagement(
+	create = "classpath:db/hsqldb.sql",
+	drop = "classpath:db/hsqldb-drop.sql"
+)
+@DatabaseSetup("/datasets/dataset.xml")
+@ExpectedDatabase("/datasets/dataset.xml")
 public class PeopleDAOTest {
 	private PeopleDAO dao;
-	
-	@BeforeClass
-	public static void setUpBeforeClass() throws Exception {
-		TestUtils.createFakeContext();
-		TestUtils.clearTestDatabase();
-	}
 
 	@Before
 	public void setUp() throws Exception {
-		TestUtils.initTestDatabase();
 		this.dao = new PeopleDAO();
-	}
-
-	@After
-	public void tearDown() throws Exception {
-		TestUtils.clearTestDatabase();
-		this.dao = null;
 	}
 
 	@Test
@@ -41,7 +56,7 @@ public class PeopleDAOTest {
 	}
 
 	@Test(expected = IllegalArgumentException.class)
-	public void testGetInvalidId() throws DAOException {
+	public void testGetNonExistentId() throws DAOException {
 		this.dao.get(100);
 	}
 
@@ -51,6 +66,7 @@ public class PeopleDAOTest {
 	}
 
 	@Test
+	@ExpectedDatabase("/datasets/dataset-delete.xml")
 	public void testDelete() throws DAOException {
 		this.dao.delete(4);
 		
@@ -58,13 +74,14 @@ public class PeopleDAOTest {
 	}
 
 	@Test(expected = IllegalArgumentException.class)
-	public void testDeleteInvalidId() throws DAOException {
+	public void testDeleteNonExistentId() throws DAOException {
 		this.dao.delete(100);
 	}
 
 	@Test
+	@ExpectedDatabase("/datasets/dataset-modify.xml")
 	public void testModify() throws DAOException {
-		this.dao.modify(5, "John", "Doe");
+		this.dao.modify(new Person(5, "John", "Doe"));
 		
 		final Person person = this.dao.get(5);
 		
@@ -74,21 +91,17 @@ public class PeopleDAOTest {
 	}
 
 	@Test(expected = IllegalArgumentException.class)
-	public void testModifyInvalidId() throws DAOException {
-		this.dao.modify(100, "John", "Doe");
+	public void testModifyNonExistentId() throws DAOException {
+		this.dao.modify(new Person(100, "John", "Doe"));
 	}
 
 	@Test(expected = IllegalArgumentException.class)
-	public void testModifyNullName() throws DAOException {
-		this.dao.modify(5, null, "Doe");
-	}
-
-	@Test(expected = IllegalArgumentException.class)
-	public void testModifyNullSurname() throws DAOException {
-		this.dao.modify(5, "John", null);
+	public void testModifyNullPerson() throws DAOException {
+		this.dao.modify(null);
 	}
 
 	@Test
+	@ExpectedDatabase("/datasets/dataset-add.xml")
 	public void testAdd() throws DAOException {
 		final Person person = this.dao.add("John", "Doe");
 		

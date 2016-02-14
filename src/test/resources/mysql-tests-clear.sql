@@ -1,4 +1,0 @@
-DELETE FROM `people`;
-DELETE FROM `users`;
-ALTER TABLE `people` AUTO_INCREMENT = 1;
-ALTER TABLE `users` AUTO_INCREMENT = 1;

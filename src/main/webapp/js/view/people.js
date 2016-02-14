@@ -114,6 +114,8 @@ function appendToTable(person) {
 }
 
 function initPeople() {
+	// getScript permite importar otro script. En este caso, se importan las
+	// funciones de acceso a datos.
 	$.getScript('js/dao/people.js', function() {
 		listPeople(function(people) {
 			$.each(people, function(key, person) {
@@ -121,6 +123,8 @@ function initPeople() {
 			});
 		});
 		
+		// La acción por defecto de enviar formulario (submit) se sobreescribe
+		// para que el envío sea a través de AJAX
 		$(peopleFormQuery).submit(function(event) {
 			var person = formToPerson();
 			

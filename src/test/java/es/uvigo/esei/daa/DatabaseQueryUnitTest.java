@@ -15,7 +15,6 @@ import javax.sql.DataSource;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.BeforeClass;
 
 import com.mysql.jdbc.PreparedStatement;
 
@@ -26,12 +25,6 @@ public abstract class DatabaseQueryUnitTest {
 	protected ResultSet result;
 	
 	protected boolean verify;
-	
-	@BeforeClass
-	public static void setUpBeforeClass()
-	throws Exception {
-		TestUtils.clearContextBuilder();
-	}
 
 	@Before
 	public void setUp() throws Exception {

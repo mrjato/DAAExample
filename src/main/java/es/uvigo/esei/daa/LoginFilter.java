@@ -1,6 +1,9 @@
 package es.uvigo.esei.daa;
 
+import static java.util.Objects.requireNonNull;
+
 import java.io.IOException;
+import java.util.Base64;
 import java.util.Optional;
 
 import javax.servlet.Filter;
@@ -17,8 +20,22 @@ import javax.servlet.http.HttpServletResponse;
 import es.uvigo.esei.daa.dao.DAOException;
 import es.uvigo.esei.daa.dao.UsersDAO;
 
+/**
+ * Security filter that implements a login protocol based on the HTTP Basic
+ * Authentication protocol. In this case, the login and password can be provided
+ * as plain request parameters or as a cookie named "token" that should contain
+ * both values in the same format as HTTP Basic Authentication
+ * ({@code base64(login + ":" + password)}).
+ * 
+ * @author Miguel Reboiro Jato
+ *
+ */
 @WebFilter(urlPatterns = { "/*", "/logout" })
 public class LoginFilter implements Filter {
+	private static final String REST_PATH = "/rest";
+	private static final String INDEX_PATH = "/index.html";
+	private static final String LOGOUT_PATH = "/logout";
+
 	@Override
 	public void doFilter(
 		ServletRequest request, 
@@ -47,17 +64,25 @@ public class LoginFilter implements Filter {
 			httpResponse.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 		}
 	}
+
+	@Override
+	public void init(FilterConfig config) throws ServletException {
+	}
+
+	@Override
+	public void destroy() {
+	}
 	
 	private boolean isLogoutPath(HttpServletRequest request) {
-		return request.getServletPath().equals("/logout");
+		return request.getServletPath().equals(LOGOUT_PATH);
 	}
 	
 	private boolean isIndexPath(HttpServletRequest request) {
-		return request.getServletPath().equals("/index.html");
+		return request.getServletPath().equals(INDEX_PATH);
 	}
 	
 	private boolean isRestPath(HttpServletRequest request) {
-		return request.getServletPath().startsWith("/rest");
+		return request.getServletPath().startsWith(REST_PATH);
 	}
 
 	private void redirectToIndex(
@@ -92,14 +117,15 @@ public class LoginFilter implements Filter {
 		final String password = request.getParameter("password");
 		
 		if (login != null && password != null) {
-			final String token = new UsersDAO().checkLogin(login, password);
-			
-			if (token == null) {
-				return false;
-			} else {
-				response.addCookie(new Cookie("token", token));
+			final UsersDAO dao = new UsersDAO();
+			if (dao.checkLogin(login, password)) {
+				final Credentials credentials = new Credentials(login, password);
+				
+				response.addCookie(new Cookie("token", credentials.toToken()));
 				
 				return true;
+			} else {
+				return false;
 			}
 		} else {
 			return false;
@@ -113,20 +139,56 @@ public class LoginFilter implements Filter {
 		
 		for (Cookie cookie : cookies) {
 			if ("token".equals(cookie.getName())) {
-				final String token = new UsersDAO().checkToken(cookie.getValue());
+				final Credentials credentials = new Credentials(cookie.getValue());
 				
-				return token != null;
+				final UsersDAO dao = new UsersDAO();
+				
+				return dao.checkLogin(credentials.getLogin(), credentials.getPassword());
 			}
 		}
 		
 		return false;
 	}
-
-	@Override
-	public void init(FilterConfig config) throws ServletException {
-	}
-
-	@Override
-	public void destroy() {
+	
+	private static class Credentials {
+		private final String login;
+		private final String password;
+		
+		public Credentials(String token) {
+			final String decodedToken = decodeBase64(token);
+			final int colonIndex = decodedToken.indexOf(':');
+			
+			if (colonIndex < 0 || colonIndex == decodedToken.length()-1) {
+				throw new IllegalArgumentException("Invalid token");
+			}
+			
+			this.login = decodedToken.substring(0, colonIndex);
+			this.password = decodedToken.substring(colonIndex + 1);
+		}
+		
+		public Credentials(String login, String password) {
+			this.login = requireNonNull(login, "Login can't be null");
+			this.password = requireNonNull(password, "Password can't be null");
+		}
+		
+		public String getLogin() {
+			return login;
+		}
+		
+		public String getPassword() {
+			return password;
+		}
+		
+		public String toToken() {
+			return encodeBase64(this.login + ":" + this.password);
+		}
+		
+		private final static String decodeBase64(String text) {
+			return new String(Base64.getDecoder().decode(text.getBytes()));
+		}
+		
+		private final static String encodeBase64(String text) {
+			return Base64.getEncoder().encodeToString(text.getBytes());
+		}
 	}
 }

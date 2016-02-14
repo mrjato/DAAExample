@@ -2,11 +2,13 @@ package es.uvigo.esei.daa.rest;
 
 import static es.uvigo.esei.daa.TestUtils.assertBadRequestStatus;
 import static es.uvigo.esei.daa.TestUtils.assertOkStatus;
+import static javax.ws.rs.client.Entity.entity;
 import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
 import java.util.List;
 
+import javax.sql.DataSource;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.Application;
 import javax.ws.rs.core.Form;
@@ -17,35 +19,41 @@ import javax.ws.rs.core.Response;
 import org.glassfish.jersey.client.ClientConfig;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.test.JerseyTest;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestExecutionListeners;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
+import com.github.springtestdbunit.DbUnitTestExecutionListener;
+import com.github.springtestdbunit.annotation.DatabaseSetup;
+import com.github.springtestdbunit.annotation.ExpectedDatabase;
 
-import es.uvigo.esei.daa.TestUtils;
 import es.uvigo.esei.daa.entities.Person;
+import es.uvigo.esei.daa.listeners.ApplicationContextBinding;
+import es.uvigo.esei.daa.listeners.ApplicationContextJndiBindingTestExecutionListener;
+import es.uvigo.esei.daa.listeners.DbManagement;
+import es.uvigo.esei.daa.listeners.DbManagementTestExecutionListener;
 
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration("classpath:contexts/mem-context.xml")
+@TestExecutionListeners({
+	DbUnitTestExecutionListener.class,
+	DbManagementTestExecutionListener.class,
+	ApplicationContextJndiBindingTestExecutionListener.class
+})
+@ApplicationContextBinding(
+	jndiUrl = "java:/comp/env/jdbc/daaexample",
+	type = DataSource.class
+)
+@DbManagement(
+	create = "classpath:db/hsqldb.sql",
+	drop = "classpath:db/hsqldb-drop.sql"
+)
+@DatabaseSetup("/datasets/dataset.xml")
+@ExpectedDatabase("/datasets/dataset.xml")
 public class PeopleResourceTest extends JerseyTest {
-	@BeforeClass
-	public static void setUpBeforeClass() throws Exception {
-		TestUtils.createFakeContext();
-	}
-
-	@Before
-	public void setUp() throws Exception {
-		super.setUp();
-		TestUtils.initTestDatabase();
-	}
-	
-	@After
-	public void tearDown() throws Exception {
-		super.tearDown();
-		
-		TestUtils.clearTestDatabase();
-	}
-
 	@Override
 	protected Application configure() {
 		return new ResourceConfig(PeopleResource.class)
@@ -87,20 +95,21 @@ public class PeopleResourceTest extends JerseyTest {
 	}
 
 	@Test
+	@ExpectedDatabase("/datasets/dataset-add.xml")
 	public void testAdd() throws IOException {
 		final Form form = new Form();
-		form.param("name", "Xoel");
-		form.param("surname", "Ximénez");
+		form.param("name", "John");
+		form.param("surname", "Doe");
 		
 		final Response response = target("people")
 			.request(MediaType.APPLICATION_JSON_TYPE)
-			.post(Entity.entity(form, MediaType.APPLICATION_FORM_URLENCODED_TYPE));
+			.post(entity(form, MediaType.APPLICATION_FORM_URLENCODED_TYPE));
 		assertOkStatus(response);
 		
 		final Person person = response.readEntity(Person.class);
 		assertEquals(11, person.getId());
-		assertEquals("Xoel", person.getName());
-		assertEquals("Ximénez", person.getSurname());
+		assertEquals("John", person.getName());
+		assertEquals("Doe", person.getSurname());
 	}
 
 	@Test
@@ -110,7 +119,7 @@ public class PeopleResourceTest extends JerseyTest {
 		
 		final Response response = target("people")
 			.request(MediaType.APPLICATION_JSON_TYPE)
-			.post(Entity.entity(form, MediaType.APPLICATION_FORM_URLENCODED_TYPE));
+			.post(entity(form, MediaType.APPLICATION_FORM_URLENCODED_TYPE));
 		
 		assertBadRequestStatus(response);
 	}
@@ -122,26 +131,27 @@ public class PeopleResourceTest extends JerseyTest {
 		
 		final Response response = target("people")
 			.request(MediaType.APPLICATION_JSON_TYPE)
-			.post(Entity.entity(form, MediaType.APPLICATION_FORM_URLENCODED_TYPE));
+			.post(entity(form, MediaType.APPLICATION_FORM_URLENCODED_TYPE));
 		
 		assertBadRequestStatus(response);
 	}
 
 	@Test
+	@ExpectedDatabase("/datasets/dataset-modify.xml")
 	public void testModify() throws IOException {
 		final Form form = new Form();
-		form.param("name", "Marta");
-		form.param("surname", "Méndez");
+		form.param("name", "John");
+		form.param("surname", "Doe");
 		
-		final Response response = target("people/4")
+		final Response response = target("people/5")
 			.request(MediaType.APPLICATION_JSON_TYPE)
-			.put(Entity.entity(form, MediaType.APPLICATION_FORM_URLENCODED_TYPE));
+			.put(entity(form, MediaType.APPLICATION_FORM_URLENCODED_TYPE));
 		assertOkStatus(response);
 		
 		final Person person = response.readEntity(Person.class);
-		assertEquals(4, person.getId());
-		assertEquals("Marta", person.getName());
-		assertEquals("Méndez", person.getSurname());
+		assertEquals(5, person.getId());
+		assertEquals("John", person.getName());
+		assertEquals("Doe", person.getSurname());
 	}
 
 	@Test
@@ -151,7 +161,7 @@ public class PeopleResourceTest extends JerseyTest {
 		
 		final Response response = target("people/4")
 			.request(MediaType.APPLICATION_JSON_TYPE)
-			.put(Entity.entity(form, MediaType.APPLICATION_FORM_URLENCODED_TYPE));
+			.put(entity(form, MediaType.APPLICATION_FORM_URLENCODED_TYPE));
 
 		assertBadRequestStatus(response);
 	}
@@ -163,7 +173,7 @@ public class PeopleResourceTest extends JerseyTest {
 		
 		final Response response = target("people/4")
 			.request(MediaType.APPLICATION_JSON_TYPE)
-			.put(Entity.entity(form, MediaType.APPLICATION_FORM_URLENCODED_TYPE));
+			.put(entity(form, MediaType.APPLICATION_FORM_URLENCODED_TYPE));
 		
 		assertBadRequestStatus(response);
 	}
@@ -182,6 +192,7 @@ public class PeopleResourceTest extends JerseyTest {
 	}
 
 	@Test
+	@ExpectedDatabase("/datasets/dataset-delete.xml")
 	public void testDelete() throws IOException {
 		final Response response = target("people/4").request().delete();
 		assertOkStatus(response);

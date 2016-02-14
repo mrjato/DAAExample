@@ -1,6 +1,7 @@
 package es.uvigo.esei.daa.rest;
 
 import static org.easymock.EasyMock.anyInt;
+import static org.easymock.EasyMock.anyObject;
 import static org.easymock.EasyMock.anyString;
 import static org.easymock.EasyMock.createMock;
 import static org.easymock.EasyMock.expect;
@@ -131,21 +132,22 @@ public class PeopleResourceUnitTest {
 	public void testModify() throws Exception {
 		final Person person = new Person(1, "Pepe", "Pérez");
 		
-		expect(daoMock.modify(person.getId(), person.getName(), person.getSurname()))
-			.andReturn(person);
-		replay(daoMock);
+		daoMock.modify(person);
 		
+		replay(daoMock);
 
 		final Response response = resource.modify(
 			person.getId(), person.getName(), person.getSurname());
+		
 		assertEquals(person, response.getEntity());
 		assertEquals(Status.OK, response.getStatusInfo());
 	}
 
 	@Test
 	public void testModifyDAOException() throws Exception {
-		expect(daoMock.modify(anyInt(), anyString(), anyString()))
-			.andThrow(new DAOException());
+		daoMock.modify(anyObject());
+		expectLastCall().andThrow(new DAOException());
+		
 		replay(daoMock);
 
 		final Response response = resource.modify(1, "Paco", "Pérez");
@@ -154,8 +156,9 @@ public class PeopleResourceUnitTest {
 
 	@Test
 	public void testModifyIllegalArgumentException() throws Exception {
-		expect(daoMock.modify(anyInt(), anyString(), anyString()))
-			.andThrow(new IllegalArgumentException());
+		daoMock.modify(anyObject());
+		expectLastCall().andThrow(new IllegalArgumentException());
+		
 		replay(daoMock);
 		
 		final Response response = resource.modify(1, "Paco", "Pérez");
