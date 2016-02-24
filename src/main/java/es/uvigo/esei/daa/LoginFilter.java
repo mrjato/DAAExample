@@ -47,6 +47,7 @@ public class LoginFilter implements Filter {
 		
 		try {
 			if (isLogoutPath(httpRequest)) {
+				destroySession(httpRequest);
 				removeTokenCookie(httpResponse);
 				redirectToIndex(httpRequest, httpResponse);
 			} else if (isIndexPath(httpRequest) || checkToken(httpRequest)) {
@@ -54,8 +55,10 @@ public class LoginFilter implements Filter {
 			} else if (checkLogin(httpRequest, httpResponse)) {
 				continueWithRedirect(httpRequest, httpResponse);
 			} else if (isRestPath(httpRequest)) {
+				destroySession(httpRequest);
 				httpResponse.sendError(HttpServletResponse.SC_FORBIDDEN);				
 			} else {
+				destroySession(httpRequest);
 				redirectToIndex(httpRequest, httpResponse);
 			}
 		} catch (IllegalArgumentException iae) {
@@ -109,6 +112,10 @@ public class LoginFilter implements Filter {
 		response.addCookie(cookie);
 	}
 	
+	private void destroySession(HttpServletRequest request) {
+		request.getSession().invalidate();
+	}
+	
 	private boolean checkLogin(
 		HttpServletRequest request, 
 		HttpServletResponse response
@@ -122,6 +129,7 @@ public class LoginFilter implements Filter {
 				final Credentials credentials = new Credentials(login, password);
 				
 				response.addCookie(new Cookie("token", credentials.toToken()));
+				request.getSession().setAttribute("login", login);
 				
 				return true;
 			} else {
