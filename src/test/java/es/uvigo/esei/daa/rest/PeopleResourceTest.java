@@ -1,9 +1,20 @@
 package es.uvigo.esei.daa.rest;
 
-import static es.uvigo.esei.daa.TestUtils.assertBadRequestStatus;
-import static es.uvigo.esei.daa.TestUtils.assertOkStatus;
+import static es.uvigo.esei.daa.dataset.PeopleDataset.existentId;
+import static es.uvigo.esei.daa.dataset.PeopleDataset.existentPerson;
+import static es.uvigo.esei.daa.dataset.PeopleDataset.newName;
+import static es.uvigo.esei.daa.dataset.PeopleDataset.newPerson;
+import static es.uvigo.esei.daa.dataset.PeopleDataset.newSurname;
+import static es.uvigo.esei.daa.dataset.PeopleDataset.nonExistentId;
+import static es.uvigo.esei.daa.dataset.PeopleDataset.people;
+import static es.uvigo.esei.daa.matchers.HasHttpStatus.hasBadRequestStatus;
+import static es.uvigo.esei.daa.matchers.HasHttpStatus.hasOkStatus;
+import static es.uvigo.esei.daa.matchers.IsEqualToPerson.containsPeopleInAnyOrder;
+import static es.uvigo.esei.daa.matchers.IsEqualToPerson.equalsToPerson;
 import static javax.ws.rs.client.Entity.entity;
-import static org.junit.Assert.assertEquals;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
 import java.io.IOException;
 import java.util.List;
@@ -17,7 +28,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.glassfish.jersey.client.ClientConfig;
-import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.test.JerseyTest;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -30,6 +40,7 @@ import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 import com.github.springtestdbunit.annotation.ExpectedDatabase;
 
+import es.uvigo.esei.daa.DAAExampleApplication;
 import es.uvigo.esei.daa.entities.Person;
 import es.uvigo.esei.daa.listeners.ApplicationContextBinding;
 import es.uvigo.esei.daa.listeners.ApplicationContextJndiBindingTestExecutionListener;
@@ -56,15 +67,14 @@ import es.uvigo.esei.daa.listeners.DbManagementTestExecutionListener;
 public class PeopleResourceTest extends JerseyTest {
 	@Override
 	protected Application configure() {
-		return new ResourceConfig(PeopleResource.class)
-			.register(JacksonJsonProvider.class)
-			.property("com.sun.jersey.api.json.POJOMappingFeature", Boolean.TRUE);
+		return new DAAExampleApplication();
 	}
 
 	@Override
 	protected void configureClient(ClientConfig config) {
 		super.configureClient(config);
 		
+		// Enables JSON transformation in client
 		config.register(JacksonJsonProvider.class);
 		config.property("com.sun.jersey.api.json.POJOMappingFeature", Boolean.TRUE);
 	}
@@ -72,136 +82,145 @@ public class PeopleResourceTest extends JerseyTest {
 	@Test
 	public void testList() throws IOException {
 		final Response response = target("people").request().get();
-		assertOkStatus(response);
+		assertThat(response, hasOkStatus());
 
 		final List<Person> people = response.readEntity(new GenericType<List<Person>>(){});
-		assertEquals(10, people.size());
+		
+		assertThat(people, containsPeopleInAnyOrder(people()));
 	}
 
 	@Test
 	public void testGet() throws IOException {
-		final Response response = target("people/4").request().get();
-		assertOkStatus(response);
+		final Response response = target("people/" + existentId()).request().get();
+		assertThat(response, hasOkStatus());
 		
 		final Person person = response.readEntity(Person.class);
-		assertEquals(4, person.getId());
-		assertEquals("María", person.getName());
-		assertEquals("Márquez", person.getSurname());
+		
+		assertThat(person, is(equalsToPerson(existentPerson())));
 	}
 
 	@Test
 	public void testGetInvalidId() throws IOException {
-		assertBadRequestStatus(target("people/100").request().get());
+		final Response response = target("people/" + nonExistentId()).request().get();
+		
+		assertThat(response, hasBadRequestStatus());
 	}
 
 	@Test
 	@ExpectedDatabase("/datasets/dataset-add.xml")
 	public void testAdd() throws IOException {
 		final Form form = new Form();
-		form.param("name", "John");
-		form.param("surname", "Doe");
+		form.param("name", newName());
+		form.param("surname", newSurname());
 		
 		final Response response = target("people")
 			.request(MediaType.APPLICATION_JSON_TYPE)
 			.post(entity(form, MediaType.APPLICATION_FORM_URLENCODED_TYPE));
-		assertOkStatus(response);
+		assertThat(response, hasOkStatus());
 		
 		final Person person = response.readEntity(Person.class);
-		assertEquals(11, person.getId());
-		assertEquals("John", person.getName());
-		assertEquals("Doe", person.getSurname());
+		
+		assertThat(person, is(equalsToPerson(newPerson())));
 	}
 
 	@Test
 	public void testAddMissingName() throws IOException {
 		final Form form = new Form();
-		form.param("surname", "Ximénez");
+		form.param("surname", newSurname());
 		
 		final Response response = target("people")
 			.request(MediaType.APPLICATION_JSON_TYPE)
 			.post(entity(form, MediaType.APPLICATION_FORM_URLENCODED_TYPE));
 		
-		assertBadRequestStatus(response);
+		assertThat(response, hasBadRequestStatus());
 	}
 
 	@Test
 	public void testAddMissingSurname() throws IOException {
 		final Form form = new Form();
-		form.param("name", "Xoel");
+		form.param("name", newName());
 		
 		final Response response = target("people")
 			.request(MediaType.APPLICATION_JSON_TYPE)
 			.post(entity(form, MediaType.APPLICATION_FORM_URLENCODED_TYPE));
 		
-		assertBadRequestStatus(response);
+		assertThat(response, hasBadRequestStatus());
 	}
 
 	@Test
 	@ExpectedDatabase("/datasets/dataset-modify.xml")
 	public void testModify() throws IOException {
 		final Form form = new Form();
-		form.param("name", "John");
-		form.param("surname", "Doe");
+		form.param("name", newName());
+		form.param("surname", newSurname());
 		
-		final Response response = target("people/5")
+		final Response response = target("people/" + existentId())
 			.request(MediaType.APPLICATION_JSON_TYPE)
 			.put(entity(form, MediaType.APPLICATION_FORM_URLENCODED_TYPE));
-		assertOkStatus(response);
+		assertThat(response, hasOkStatus());
 		
-		final Person person = response.readEntity(Person.class);
-		assertEquals(5, person.getId());
-		assertEquals("John", person.getName());
-		assertEquals("Doe", person.getSurname());
+		final Person modifiedPerson = response.readEntity(Person.class);
+		
+		final Person person = existentPerson();
+		person.setName(newName());
+		person.setSurname(newSurname());
+		
+		assertThat(modifiedPerson, is(equalsToPerson(person)));
 	}
 
 	@Test
 	public void testModifyName() throws IOException {
 		final Form form = new Form();
-		form.param("name", "Marta");
+		form.param("name", newName());
 		
-		final Response response = target("people/4")
+		final Response response = target("people/" + existentId())
 			.request(MediaType.APPLICATION_JSON_TYPE)
 			.put(entity(form, MediaType.APPLICATION_FORM_URLENCODED_TYPE));
 
-		assertBadRequestStatus(response);
+		assertThat(response, hasBadRequestStatus());
 	}
 
 	@Test
 	public void testModifySurname() throws IOException {
 		final Form form = new Form();
-		form.param("surname", "Méndez");
+		form.param("surname", newSurname());
 		
-		final Response response = target("people/4")
+		final Response response = target("people/" + existentId())
 			.request(MediaType.APPLICATION_JSON_TYPE)
 			.put(entity(form, MediaType.APPLICATION_FORM_URLENCODED_TYPE));
 		
-		assertBadRequestStatus(response);
+		assertThat(response, hasBadRequestStatus());
 	}
 
 	@Test
 	public void testModifyInvalidId() throws IOException {
 		final Form form = new Form();
-		form.param("name", "Marta");
-		form.param("surname", "Méndez");
+		form.param("name", newName());
+		form.param("surname", newSurname());
 		
-		final Response response = target("people/100")
+		final Response response = target("people/" + nonExistentId())
 			.request(MediaType.APPLICATION_JSON_TYPE)
 			.put(Entity.entity(form, MediaType.APPLICATION_FORM_URLENCODED_TYPE));
 
-		assertBadRequestStatus(response);
+		assertThat(response, hasBadRequestStatus());
 	}
 
 	@Test
 	@ExpectedDatabase("/datasets/dataset-delete.xml")
 	public void testDelete() throws IOException {
-		final Response response = target("people/4").request().delete();
-		assertOkStatus(response);
+		final Response response = target("people/" + existentId()).request().delete();
 		
-		assertEquals(4, (int) response.readEntity(Integer.class));
+		assertThat(response, hasOkStatus());
+		
+		final Integer deletedId = response.readEntity(Integer.class);
+		
+		assertThat(deletedId, is(equalTo(existentId())));
 	}
 
 	@Test
 	public void testDeleteInvalidId() throws IOException {
-		assertBadRequestStatus(target("people/100").request().delete());
+		final Response response = target("people/" + nonExistentId()).request().delete();
+
+		assertThat(response, hasBadRequestStatus());
 	}
 }

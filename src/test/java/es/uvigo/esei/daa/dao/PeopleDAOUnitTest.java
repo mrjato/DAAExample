@@ -1,75 +1,37 @@
 package es.uvigo.esei.daa.dao;
 
+import static es.uvigo.esei.daa.dataset.PeopleDataset.existentId;
+import static es.uvigo.esei.daa.dataset.PeopleDataset.existentPerson;
+import static es.uvigo.esei.daa.dataset.PeopleDataset.newName;
+import static es.uvigo.esei.daa.dataset.PeopleDataset.newPerson;
+import static es.uvigo.esei.daa.dataset.PeopleDataset.newSurname;
+import static es.uvigo.esei.daa.dataset.PeopleDataset.people;
+import static es.uvigo.esei.daa.matchers.IsEqualToPerson.containsPeopleInAnyOrder;
+import static es.uvigo.esei.daa.matchers.IsEqualToPerson.equalsToPerson;
 import static org.easymock.EasyMock.anyString;
 import static org.easymock.EasyMock.eq;
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.reset;
-import static org.junit.Assert.assertEquals;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
 import java.sql.SQLException;
-import java.util.Arrays;
-import java.util.List;
 
 import org.junit.Test;
 
-import es.uvigo.esei.daa.DatabaseQueryUnitTest;
+import com.mysql.jdbc.Statement;
+
 import es.uvigo.esei.daa.entities.Person;
+import es.uvigo.esei.daa.util.DatabaseQueryUnitTest;
 
 public class PeopleDAOUnitTest extends DatabaseQueryUnitTest {
 	@Test
-	public void testGet() throws Exception {
-		final Person person = new Person(1, "Pepe", "Pérez");
-		
-		expect(result.next()).andReturn(true);
-		expect(result.getInt("id")).andReturn(person.getId());
-		expect(result.getString("name")).andReturn(person.getName());
-		expect(result.getString("surname")).andReturn(person.getSurname());
-		result.close();
-		
-		replayAll();
-		
-		final PeopleDAO peopleDAO = new PeopleDAO();
-		
-		assertEquals("Unexpected person data",
-			person, peopleDAO.get(person.getId())
-		);
-	}
-	
-	@Test(expected = IllegalArgumentException.class)
-	public void testGetMissing() throws Exception {
-		expect(result.next()).andReturn(false);
-		result.close();
-		
-		replayAll();
-		
-		final PeopleDAO peopleDAO = new PeopleDAO();
-		peopleDAO.get(2);
-	}
-	
-	@Test(expected = DAOException.class)
-	public void testGetUnexpectedException() throws Exception {
-		expect(result.next()).andThrow(new SQLException());
-		result.close();
-		
-		replayAll();
-		
-		final PeopleDAO peopleDAO = new PeopleDAO();
-		peopleDAO.get(2);
-	}
-
-	@Test
 	public void testList() throws Exception {
-		final List<Person> people = Arrays.asList(
-			new Person(1, "Pepe", "Pérez"),
-			new Person(2, "Paco", "Martínez"),
-			new Person(3, "Martina", "Juárez")
-		);
+		final Person[] people = people();
 		
 		for (Person person : people) {
-			expect(result.next()).andReturn(true);
-			expect(result.getInt("id")).andReturn(person.getId());
-			expect(result.getString("name")).andReturn(person.getName());
-			expect(result.getString("surname")).andReturn(person.getSurname());
+			expectPersonRow(person);
 		}
 		expect(result.next()).andReturn(false);
 		result.close();
@@ -77,9 +39,7 @@ public class PeopleDAOUnitTest extends DatabaseQueryUnitTest {
 		replayAll();
 		final PeopleDAO peopleDAO = new PeopleDAO();
 
-		assertEquals("Unexpected people data",
-			people, peopleDAO.list()
-		);
+		assertThat(peopleDAO.list(), containsPeopleInAnyOrder(people));
 	}
 	
 	@Test(expected = DAOException.class)
@@ -92,18 +52,55 @@ public class PeopleDAOUnitTest extends DatabaseQueryUnitTest {
 		final PeopleDAO peopleDAO = new PeopleDAO();
 		peopleDAO.list();
 	}
+	
+	@Test
+	public void testGet() throws Exception {
+		final Person existentPerson = existentPerson();
+		
+		expectPersonRow(existentPerson);
+		result.close();
+		
+		replayAll();
+		
+		final PeopleDAO peopleDAO = new PeopleDAO();
+		
+		assertThat(peopleDAO.get(existentId()), is(equalTo(existentPerson)));
+	}
+	
+	@Test(expected = IllegalArgumentException.class)
+	public void testGetMissing() throws Exception {
+		expect(result.next()).andReturn(false);
+		result.close();
+		
+		replayAll();
+		
+		final PeopleDAO peopleDAO = new PeopleDAO();
+		peopleDAO.get(existentId());
+	}
+	
+	@Test(expected = DAOException.class)
+	public void testGetUnexpectedException() throws Exception {
+		expect(result.next()).andThrow(new SQLException());
+		result.close();
+		
+		replayAll();
+		
+		final PeopleDAO peopleDAO = new PeopleDAO();
+		peopleDAO.get(existentId());
+	}
 
 	@Test
 	public void testAdd() throws Exception {
-		final Person person = new Person(1, "Pepe", "Pérez");
-		
+		final Person person = newPerson();
 		reset(connection);
-		expect(connection.prepareStatement(anyString(), eq(1)))
+		expect(connection.prepareStatement(anyString(), eq(Statement.RETURN_GENERATED_KEYS)))
 			.andReturn(statement);
 		expect(statement.executeUpdate()).andReturn(1);
 		expect(statement.getGeneratedKeys()).andReturn(result);
+		
+		// Key retrieval
 		expect(result.next()).andReturn(true);
-		expect(result.getInt(1)).andReturn(person.getId()); // Key retrieval
+		expect(result.getInt(1)).andReturn(person.getId());
 		connection.close();
 		result.close();
 
@@ -112,7 +109,7 @@ public class PeopleDAOUnitTest extends DatabaseQueryUnitTest {
 		final PeopleDAO peopleDAO = new PeopleDAO();
 		final Person newPerson = peopleDAO.add(person.getName(), person.getSurname());
 		
-		assertEquals(person, newPerson);
+		assertThat(newPerson, is(equalsToPerson(person)));
 	}
 
 	@Test(expected = IllegalArgumentException.class)
@@ -123,7 +120,7 @@ public class PeopleDAOUnitTest extends DatabaseQueryUnitTest {
 		
 		resetAll(); // No expectations
 		
-		peopleDAO.add(null, "Pepe");
+		peopleDAO.add(null, newSurname());
 	}
 
 	@Test(expected = IllegalArgumentException.class)
@@ -134,7 +131,7 @@ public class PeopleDAOUnitTest extends DatabaseQueryUnitTest {
 		
 		resetAll(); // No expectations
 		
-		peopleDAO.add("Pepe", null);
+		peopleDAO.add(newName(), null);
 	}
 
 	@Test(expected = DAOException.class)
@@ -148,7 +145,7 @@ public class PeopleDAOUnitTest extends DatabaseQueryUnitTest {
 		replayAll();
 		
 		final PeopleDAO peopleDAO = new PeopleDAO();
-		peopleDAO.add("Paco", "Pérez");
+		peopleDAO.add(newName(), newSurname());
 	}
 
 	@Test(expected = DAOException.class)
@@ -165,7 +162,7 @@ public class PeopleDAOUnitTest extends DatabaseQueryUnitTest {
 		replayAll();
 		
 		final PeopleDAO peopleDAO = new PeopleDAO();
-		peopleDAO.add("Paco", "Pérez");
+		peopleDAO.add(newName(), newSurname());
 	}
 	
 	@Test(expected = DAOException.class)
@@ -179,7 +176,7 @@ public class PeopleDAOUnitTest extends DatabaseQueryUnitTest {
 		replayAll();
 		
 		final PeopleDAO peopleDAO = new PeopleDAO();
-		peopleDAO.add("Paco", "Pérez");
+		peopleDAO.add(newName(), newSurname());
 	}
 
 	@Test
@@ -189,7 +186,7 @@ public class PeopleDAOUnitTest extends DatabaseQueryUnitTest {
 		replayAll();
 		
 		final PeopleDAO peopleDAO = new PeopleDAO();
-		peopleDAO.delete(1);
+		peopleDAO.delete(existentId());
 	}
 
 	@Test(expected = IllegalArgumentException.class)
@@ -199,7 +196,7 @@ public class PeopleDAOUnitTest extends DatabaseQueryUnitTest {
 		replayAll();
 		
 		final PeopleDAO peopleDAO = new PeopleDAO();
-		peopleDAO.delete(1);
+		peopleDAO.delete(existentId());
 	}
 
 	@Test(expected = DAOException.class)
@@ -209,19 +206,17 @@ public class PeopleDAOUnitTest extends DatabaseQueryUnitTest {
 		replayAll();
 		
 		final PeopleDAO peopleDAO = new PeopleDAO();
-		peopleDAO.delete(1);
+		peopleDAO.delete(existentId());
 	}
 
 	@Test
 	public void testModify() throws Exception {
-		final Person person = new Person(1, "Pepe", "Pérez");
-		
 		expect(statement.executeUpdate()).andReturn(1);
 
 		replayAll();
 		
 		final PeopleDAO peopleDAO = new PeopleDAO();
-		peopleDAO.modify(person);
+		peopleDAO.modify(existentPerson());
 	}
 
 	@Test(expected = IllegalArgumentException.class)
@@ -242,7 +237,7 @@ public class PeopleDAOUnitTest extends DatabaseQueryUnitTest {
 		replayAll();
 		
 		final PeopleDAO peopleDAO = new PeopleDAO();
-		peopleDAO.modify(new Person(1, "Paco", "Pérez"));
+		peopleDAO.modify(existentPerson());
 	}
 	
 	@Test(expected = DAOException.class)
@@ -252,6 +247,13 @@ public class PeopleDAOUnitTest extends DatabaseQueryUnitTest {
 		replayAll();
 		
 		final PeopleDAO peopleDAO = new PeopleDAO();
-		peopleDAO.modify(new Person(1, "Paco", "Pérez"));
+		peopleDAO.modify(existentPerson());
+	}
+	
+	private void expectPersonRow(Person person) throws SQLException {
+		expect(result.next()).andReturn(true);
+		expect(result.getInt("id")).andReturn(person.getId());
+		expect(result.getString("name")).andReturn(person.getName());
+		expect(result.getString("surname")).andReturn(person.getSurname());
 	}
 }

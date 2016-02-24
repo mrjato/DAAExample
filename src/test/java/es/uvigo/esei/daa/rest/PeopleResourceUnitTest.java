@@ -1,5 +1,17 @@
 package es.uvigo.esei.daa.rest;
 
+import static es.uvigo.esei.daa.dataset.PeopleDataset.existentId;
+import static es.uvigo.esei.daa.dataset.PeopleDataset.existentPerson;
+import static es.uvigo.esei.daa.dataset.PeopleDataset.newName;
+import static es.uvigo.esei.daa.dataset.PeopleDataset.newPerson;
+import static es.uvigo.esei.daa.dataset.PeopleDataset.newSurname;
+import static es.uvigo.esei.daa.dataset.PeopleDataset.people;
+import static es.uvigo.esei.daa.matchers.HasHttpStatus.hasBadRequestStatus;
+import static es.uvigo.esei.daa.matchers.HasHttpStatus.hasInternalServerErrorStatus;
+import static es.uvigo.esei.daa.matchers.HasHttpStatus.hasOkStatus;
+import static es.uvigo.esei.daa.matchers.IsEqualToPerson.containsPeopleInAnyOrder;
+import static es.uvigo.esei.daa.matchers.IsEqualToPerson.equalsToPerson;
+import static java.util.Arrays.asList;
 import static org.easymock.EasyMock.anyInt;
 import static org.easymock.EasyMock.anyObject;
 import static org.easymock.EasyMock.anyString;
@@ -8,13 +20,13 @@ import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.expectLastCall;
 import static org.easymock.EasyMock.replay;
 import static org.easymock.EasyMock.verify;
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 
-import java.util.Arrays;
 import java.util.List;
 
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
 
 import org.junit.After;
 import org.junit.Before;
@@ -45,77 +57,88 @@ public class PeopleResourceUnitTest {
 	}
 
 	@Test
+	@SuppressWarnings("unchecked")
 	public void testList() throws Exception {
-		final List<Person> people = Arrays.asList(
-			new Person(1, "Pepe", "Pérez"),
-			new Person(2, "Paco", "Martínez"),
-			new Person(3, "Martina", "Juárez")
-		);
+		final List<Person> people = asList(people());
 		
 		expect(daoMock.list()).andReturn(people);
+		
 		replay(daoMock);
 		
 		final Response response = resource.list();
-		assertEquals(people, response.getEntity());
-		assertEquals(Status.OK, response.getStatusInfo());
+		
+		assertThat(response, hasOkStatus());
+		assertThat((List<Person>) response.getEntity(), containsPeopleInAnyOrder(people()));
 	}
 
 	@Test
 	public void testListDAOException() throws Exception {
 		expect(daoMock.list()).andThrow(new DAOException());
+		
 		replay(daoMock);
 		
 		final Response response = resource.list();
-		assertEquals(Status.INTERNAL_SERVER_ERROR, response.getStatusInfo());
+		
+		assertThat(response, hasInternalServerErrorStatus());
 	}
 
 	@Test
 	public void testGet() throws Exception {
-		final Person person = new Person(1, "Pepe", "Pérez");
+		final Person person = existentPerson();
 		
 		expect(daoMock.get(person.getId())).andReturn(person);
+		
 		replay(daoMock);
 		
 		final Response response = resource.get(person.getId());
-		assertEquals(person, response.getEntity());
-		assertEquals(Status.OK, response.getStatusInfo());
+		
+		assertThat(response, hasOkStatus());
+		assertThat((Person) response.getEntity(), is(equalsToPerson(person)));
 	}
 
 	@Test
 	public void testGetDAOException() throws Exception {
 		expect(daoMock.get(anyInt())).andThrow(new DAOException());
+		
 		replay(daoMock);
 		
-		final Response response = resource.get(1);
-		assertEquals(Status.INTERNAL_SERVER_ERROR, response.getStatusInfo());
+		final Response response = resource.get(existentId());
+		
+		assertThat(response, hasInternalServerErrorStatus());
 	}
 
 	@Test
 	public void testGetIllegalArgumentException() throws Exception {
 		expect(daoMock.get(anyInt())).andThrow(new IllegalArgumentException());
+		
 		replay(daoMock);
 		
-		final Response response = resource.get(1);
-		assertEquals(Status.BAD_REQUEST, response.getStatusInfo());
+		final Response response = resource.get(existentId());
+		
+		assertThat(response, hasBadRequestStatus());
 	}
 	
 	@Test
 	public void testDelete() throws Exception {
 		daoMock.delete(anyInt());
+		
 		replay(daoMock);
 		
 		final Response response = resource.delete(1);
-		assertEquals(Status.OK, response.getStatusInfo());
+		
+		assertThat(response, hasOkStatus());
 	}
 
 	@Test
 	public void testDeleteDAOException() throws Exception {
 		daoMock.delete(anyInt());
 		expectLastCall().andThrow(new DAOException());
+		
 		replay(daoMock);
 		
 		final Response response = resource.delete(1);
-		assertEquals(Status.INTERNAL_SERVER_ERROR, response.getStatusInfo());
+		
+		assertThat(response, hasInternalServerErrorStatus());
 	}
 
 	@Test
@@ -125,12 +148,15 @@ public class PeopleResourceUnitTest {
 		replay(daoMock);
 		
 		final Response response = resource.delete(1);
-		assertEquals(Status.BAD_REQUEST, response.getStatusInfo());
+		
+		assertThat(response, hasBadRequestStatus());
 	}
 
 	@Test
 	public void testModify() throws Exception {
-		final Person person = new Person(1, "Pepe", "Pérez");
+		final Person person = existentPerson();
+		person.setName(newName());
+		person.setSurname(newSurname());
 		
 		daoMock.modify(person);
 		
@@ -139,8 +165,8 @@ public class PeopleResourceUnitTest {
 		final Response response = resource.modify(
 			person.getId(), person.getName(), person.getSurname());
 		
+		assertThat(response, hasOkStatus());
 		assertEquals(person, response.getEntity());
-		assertEquals(Status.OK, response.getStatusInfo());
 	}
 
 	@Test
@@ -150,8 +176,9 @@ public class PeopleResourceUnitTest {
 		
 		replay(daoMock);
 
-		final Response response = resource.modify(1, "Paco", "Pérez");
-		assertEquals(Status.INTERNAL_SERVER_ERROR, response.getStatusInfo());
+		final Response response = resource.modify(existentId(), newName(), newSurname());
+		
+		assertThat(response, hasInternalServerErrorStatus());
 	}
 
 	@Test
@@ -160,24 +187,23 @@ public class PeopleResourceUnitTest {
 		expectLastCall().andThrow(new IllegalArgumentException());
 		
 		replay(daoMock);
+
+		final Response response = resource.modify(existentId(), newName(), newSurname());
 		
-		final Response response = resource.modify(1, "Paco", "Pérez");
-		assertEquals(Status.BAD_REQUEST, response.getStatusInfo());
+		assertThat(response, hasBadRequestStatus());
 	}
 
 	@Test
 	public void testAdd() throws Exception {
-		final Person person = new Person(1, "Pepe", "Pérez");
-		
-		expect(daoMock.add(person.getName(), person.getSurname()))
-			.andReturn(person);
+		expect(daoMock.add(newName(), newSurname()))
+			.andReturn(newPerson());
 		replay(daoMock);
 		
 
-		final Response response = resource.add(
-			person.getName(), person.getSurname());
-		assertEquals(person, response.getEntity());
-		assertEquals(Status.OK, response.getStatusInfo());
+		final Response response = resource.add(newName(), newSurname());
+		
+		assertThat(response, hasOkStatus());
+		assertThat((Person) response.getEntity(), is(equalsToPerson(newPerson())));
 	}
 
 	@Test
@@ -186,8 +212,9 @@ public class PeopleResourceUnitTest {
 			.andThrow(new DAOException());
 		replay(daoMock);
 
-		final Response response = resource.add("Paco", "Pérez");
-		assertEquals(Status.INTERNAL_SERVER_ERROR, response.getStatusInfo());
+		final Response response = resource.add(newName(), newSurname());
+		
+		assertThat(response, hasInternalServerErrorStatus());
 	}
 
 	@Test
@@ -196,7 +223,8 @@ public class PeopleResourceUnitTest {
 			.andThrow(new IllegalArgumentException());
 		replay(daoMock);
 		
-		final Response response = resource.add("Paco", "Pérez");
-		assertEquals(Status.BAD_REQUEST, response.getStatusInfo());
+		final Response response = resource.add(newName(), newSurname());
+		
+		assertThat(response, hasBadRequestStatus());
 	}
 }

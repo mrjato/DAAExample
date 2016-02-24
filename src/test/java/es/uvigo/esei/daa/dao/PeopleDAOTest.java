@@ -1,6 +1,18 @@
 package es.uvigo.esei.daa.dao;
 
-import static org.junit.Assert.assertEquals;
+import static es.uvigo.esei.daa.dataset.PeopleDataset.existentId;
+import static es.uvigo.esei.daa.dataset.PeopleDataset.existentPerson;
+import static es.uvigo.esei.daa.dataset.PeopleDataset.newName;
+import static es.uvigo.esei.daa.dataset.PeopleDataset.newPerson;
+import static es.uvigo.esei.daa.dataset.PeopleDataset.newSurname;
+import static es.uvigo.esei.daa.dataset.PeopleDataset.nonExistentId;
+import static es.uvigo.esei.daa.dataset.PeopleDataset.nonExistentPerson;
+import static es.uvigo.esei.daa.dataset.PeopleDataset.people;
+import static es.uvigo.esei.daa.dataset.PeopleDataset.peopleWithout;
+import static es.uvigo.esei.daa.matchers.IsEqualToPerson.containsPeopleInAnyOrder;
+import static es.uvigo.esei.daa.matchers.IsEqualToPerson.equalsToPerson;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
 import javax.sql.DataSource;
 
@@ -47,52 +59,52 @@ public class PeopleDAOTest {
 	}
 
 	@Test
+	public void testList() throws DAOException {
+		assertThat(this.dao.list(), containsPeopleInAnyOrder(people()));
+	}
+
+	@Test
 	public void testGet() throws DAOException {
-		final Person person = this.dao.get(4);
+		final Person person = this.dao.get(existentId());
 		
-		assertEquals(4, person.getId());
-		assertEquals("María", person.getName());
-		assertEquals("Márquez", person.getSurname());
+		assertThat(person, is(equalsToPerson(existentPerson())));
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void testGetNonExistentId() throws DAOException {
-		this.dao.get(100);
-	}
-
-	@Test
-	public void testList() throws DAOException {
-		assertEquals(10, this.dao.list().size());
+		this.dao.get(nonExistentId());
 	}
 
 	@Test
 	@ExpectedDatabase("/datasets/dataset-delete.xml")
 	public void testDelete() throws DAOException {
-		this.dao.delete(4);
-		
-		assertEquals(9, this.dao.list().size());
+		this.dao.delete(existentId());
+
+		assertThat(this.dao.list(), containsPeopleInAnyOrder(peopleWithout(existentId())));
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void testDeleteNonExistentId() throws DAOException {
-		this.dao.delete(100);
+		this.dao.delete(nonExistentId());
 	}
 
 	@Test
 	@ExpectedDatabase("/datasets/dataset-modify.xml")
 	public void testModify() throws DAOException {
-		this.dao.modify(new Person(5, "John", "Doe"));
+		final Person person = existentPerson();
+		person.setName(newName());
+		person.setSurname(newSurname());
 		
-		final Person person = this.dao.get(5);
+		this.dao.modify(person);
 		
-		assertEquals(5, person.getId());
-		assertEquals("John", person.getName());
-		assertEquals("Doe", person.getSurname());
+		final Person persistentPerson = this.dao.get(person.getId());
+		
+		assertThat(persistentPerson, is(equalsToPerson(person)));
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void testModifyNonExistentId() throws DAOException {
-		this.dao.modify(new Person(100, "John", "Doe"));
+		this.dao.modify(nonExistentPerson());
 	}
 
 	@Test(expected = IllegalArgumentException.class)
@@ -103,25 +115,22 @@ public class PeopleDAOTest {
 	@Test
 	@ExpectedDatabase("/datasets/dataset-add.xml")
 	public void testAdd() throws DAOException {
-		final Person person = this.dao.add("John", "Doe");
+		final Person person = this.dao.add(newName(), newSurname());
 		
-		assertEquals("John", person.getName());
-		assertEquals("Doe", person.getSurname());
+		assertThat(person, is(equalsToPerson(newPerson())));
 		
-		final Person personGet = this.dao.get(person.getId());
+		final Person persistentPerson = this.dao.get(person.getId());
 
-		assertEquals(person.getId(), personGet.getId());
-		assertEquals("John", personGet.getName());
-		assertEquals("Doe", personGet.getSurname());
+		assertThat(persistentPerson, is(equalsToPerson(newPerson())));
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void testAddNullName() throws DAOException {
-		this.dao.add(null, "Doe");
+		this.dao.add(null, newSurname());
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void testAddNullSurname() throws DAOException {
-		this.dao.add("John", null);
+		this.dao.add(newName(), null);
 	}
 }

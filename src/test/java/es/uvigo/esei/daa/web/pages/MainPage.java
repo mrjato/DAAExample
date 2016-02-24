@@ -1,5 +1,6 @@
 package es.uvigo.esei.daa.web.pages;
 
+import static java.util.stream.Collectors.toList;
 import static org.openqa.selenium.support.ui.ExpectedConditions.presenceOfElementLocated;
 import static org.openqa.selenium.support.ui.ExpectedConditions.textToBePresentInElement;
 
@@ -42,6 +43,10 @@ public class MainPage {
 		return new PeopleTable(this.driver).countPeople();
 	}
 	
+	public List<Person> listPeople() {
+		return new PeopleTable(this.driver).listPeople();
+	}
+	
 	public Person getLastPerson() {
 		return new PeopleTable(this.driver).getPersonInLastRow();
 	}
@@ -66,13 +71,13 @@ public class MainPage {
 		return table.getPerson(name, surname);
 	}
 	
-	public void editPerson(int id, String newName, String newSurname) {
+	public void editPerson(Person person) {
 		final PeopleTable table = new PeopleTable(this.driver);
-		table.editPerson(id);
+		table.editPerson(person.getId());
 
 		final PersonForm form = new PersonForm(this.driver);
-		form.setName(newName);
-		form.setSurname(newSurname);
+		form.setName(person.getName());
+		form.setSurname(person.getSurname());
 		form.submit();
 	}
 	
@@ -83,7 +88,6 @@ public class MainPage {
 	}
 	
 	private final static class PeopleTable {
-		
 		private final WebDriver driver;
 		
 		private final WebElement table;
@@ -146,12 +150,19 @@ public class MainPage {
 		}
 		
 		public int countPeople() {
+			return getRows().size();
+		}
+		
+		public List<Person> listPeople() {
+			return getRows().stream()
+				.map(this::rowToPerson)
+			.collect(toList());
+		}
+		
+		private List<WebElement> getRows() {
 			final String xpathQuery = "//tr[starts-with(@id, '" + ID_PREFIX + "')]";
 			
-			final List<WebElement> peopleRows =
-				this.table.findElements(By.xpath(xpathQuery));
-			
-			return peopleRows.size();
+			return this.table.findElements(By.xpath(xpathQuery));
 		}
 		
 		private Person rowToPerson(WebElement row) {

@@ -1,7 +1,16 @@
 package es.uvigo.esei.daa.web;
 
-import static org.junit.Assert.assertEquals;
+import static es.uvigo.esei.daa.dataset.PeopleDataset.existentId;
+import static es.uvigo.esei.daa.dataset.PeopleDataset.existentPerson;
+import static es.uvigo.esei.daa.dataset.PeopleDataset.newName;
+import static es.uvigo.esei.daa.dataset.PeopleDataset.newPerson;
+import static es.uvigo.esei.daa.dataset.PeopleDataset.newSurname;
+import static es.uvigo.esei.daa.dataset.PeopleDataset.people;
+import static es.uvigo.esei.daa.matchers.IsEqualToPerson.containsPeopleInAnyOrder;
+import static es.uvigo.esei.daa.matchers.IsEqualToPerson.equalsToPerson;
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
 
 import java.util.concurrent.TimeUnit;
 
@@ -78,42 +87,36 @@ public class PeopleWebTest {
 
 	@Test
 	public void testList() throws Exception {
-		assertEquals(10, mainPage.countPeople());
+		assertThat(mainPage.listPeople(), containsPeopleInAnyOrder(people()));
 	}
 
 	@Test
 	@ExpectedDatabase("/datasets/dataset-add.xml")
 	public void testAdd() throws Exception {
-		final String name = "John";
-		final String surname = "Doe";
+		final Person newPerson = mainPage.addPerson(newName(), newSurname());
 		
-		final Person newPerson = mainPage.addPerson(name, surname);
-		
-		assertEquals(name, newPerson.getName());
-		assertEquals(surname, newPerson.getSurname());
+		assertThat(newPerson, is(equalsToPerson(newPerson())));
 	}
 
 	@Test
 	@ExpectedDatabase("/datasets/dataset-modify.xml")
 	public void testEdit() throws Exception {
-		final int id = 5;
-		final String newName = "John";
-		final String newSurname = "Doe";
+		final Person person = existentPerson();
+		person.setName(newName());
+		person.setSurname(newSurname());
 
-		mainPage.editPerson(id, "John", "Doe");
+		mainPage.editPerson(person);
 		
-		final Person person = mainPage.getPerson(id);
+		final Person webPerson = mainPage.getPerson(person.getId());
 		
-		assertEquals(id, person.getId());
-		assertEquals(newName, person.getName());
-		assertEquals(newSurname, person.getSurname());
+		assertThat(webPerson, is(equalsToPerson(person)));
 	}
 
 	@Test
 	@ExpectedDatabase("/datasets/dataset-delete.xml")
 	public void testDelete() throws Exception {
-		mainPage.deletePerson(4);
+		mainPage.deletePerson(existentId());
 		
-		assertFalse(mainPage.hasPerson(4));
+		assertFalse(mainPage.hasPerson(existentId()));
 	}
 }
