@@ -19,6 +19,7 @@
 		<!-- General configuration -->
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<project.servers.directory>${project.basedir}/servers</project.servers.directory>
 		<cargo.tomcat.start.skip>false</cargo.tomcat.start.skip>
