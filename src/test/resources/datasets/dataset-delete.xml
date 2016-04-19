@@ -12,5 +12,6 @@
 	<people id="9" name="Julia" surname="Justa" />
 	<people id="10" name="Juan" surname="Jiménez" />
 
-	<users login="admin" password="0b893644f3b2097d004c58d585e784ac92dd1356d25158a298573ad54ab2d15d" />
+	<users login="admin" password="43f413b773f7d0cfad0e8e6529ec1249ce71e8697919eab30d82d800a3986b70" />
+	<users login="normal" password="688f21dd2d65970f174e2c9d35159250a8a23e27585452683db8c5d10b586336" />
 </dataset>

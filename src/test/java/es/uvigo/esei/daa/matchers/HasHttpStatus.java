@@ -77,4 +77,14 @@ public class HasHttpStatus extends TypeSafeMatcher<Response> {
 	public static Matcher<Response> hasInternalServerErrorStatus() {
 		return new HasHttpStatus(Response.Status.INTERNAL_SERVER_ERROR);
 	}
+	
+	@Factory
+	public static Matcher<Response> hasUnauthorized() {
+		return new HasHttpStatus(Response.Status.UNAUTHORIZED);
+	}
+	
+	@Factory
+	public static Matcher<Response> hasForbidden() {
+		return new HasHttpStatus(Response.Status.FORBIDDEN);
+	}
 }

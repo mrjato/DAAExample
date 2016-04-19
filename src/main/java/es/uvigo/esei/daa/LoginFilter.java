@@ -30,11 +30,13 @@ import es.uvigo.esei.daa.dao.UsersDAO;
  * @author Miguel Reboiro Jato
  *
  */
-@WebFilter(urlPatterns = { "/*", "/logout" })
+@WebFilter(urlPatterns = "/*")
 public class LoginFilter implements Filter {
-	private static final String REST_PATH = "/rest";
-	private static final String INDEX_PATH = "/index.html";
 	private static final String LOGOUT_PATH = "/logout";
+	private static final String REST_PATH = "/rest";
+	private static final String[] PUBLIC_PATHS = new String[] {
+		"/index.html" // Add the paths that can be publicly accessed (e.g. /js, /css...)
+	};
 
 	@Override
 	public void doFilter(
@@ -48,15 +50,15 @@ public class LoginFilter implements Filter {
 		try {
 			if (isLogoutPath(httpRequest)) {
 				destroySession(httpRequest);
-				removeTokenCookie(httpResponse);
+				removeTokenCookie(httpRequest, httpResponse);
 				redirectToIndex(httpRequest, httpResponse);
-			} else if (isIndexPath(httpRequest) || checkToken(httpRequest)) {
+			} else if (isPublicPath(httpRequest) || checkToken(httpRequest)) {
 				chain.doFilter(request, response);
 			} else if (checkLogin(httpRequest, httpResponse)) {
 				continueWithRedirect(httpRequest, httpResponse);
 			} else if (isRestPath(httpRequest)) {
 				destroySession(httpRequest);
-				httpResponse.sendError(HttpServletResponse.SC_FORBIDDEN);				
+				httpResponse.sendError(HttpServletResponse.SC_FORBIDDEN);
 			} else {
 				destroySession(httpRequest);
 				redirectToIndex(httpRequest, httpResponse);
@@ -80,8 +82,13 @@ public class LoginFilter implements Filter {
 		return request.getServletPath().equals(LOGOUT_PATH);
 	}
 	
-	private boolean isIndexPath(HttpServletRequest request) {
-		return request.getServletPath().equals(INDEX_PATH);
+	private boolean isPublicPath(HttpServletRequest request) {
+		for (String path : PUBLIC_PATHS) {
+			if (request.getServletPath().startsWith(path))
+				return true;
+		}
+		
+		return false;
 	}
 	
 	private boolean isRestPath(HttpServletRequest request) {
@@ -106,10 +113,15 @@ public class LoginFilter implements Filter {
 		response.sendRedirect(redirectPath);
 	}
 	
-	private void removeTokenCookie(HttpServletResponse response) {
-		final Cookie cookie = new Cookie("token", "");
-		cookie.setMaxAge(0);
-		response.addCookie(cookie);
+	private void removeTokenCookie(
+		HttpServletRequest request,
+		HttpServletResponse response
+	) {
+		final Cookie cookie = getTokenCookie(request);
+		if (cookie != null) {
+			cookie.setMaxAge(0);
+			response.addCookie(cookie);
+		}
 	}
 	
 	private void destroySession(HttpServletRequest request) {
@@ -125,6 +137,7 @@ public class LoginFilter implements Filter {
 		
 		if (login != null && password != null) {
 			final UsersDAO dao = new UsersDAO();
+			
 			if (dao.checkLogin(login, password)) {
 				final Credentials credentials = new Credentials(login, password);
 				
@@ -140,18 +153,33 @@ public class LoginFilter implements Filter {
 		}
 	}
 	
-	private boolean checkToken(HttpServletRequest request)
-	throws DAOException, IllegalArgumentException {
+	private Cookie getTokenCookie(HttpServletRequest request) {
 		final Cookie[] cookies = Optional.ofNullable(request.getCookies())
 			.orElse(new Cookie[0]);
 		
 		for (Cookie cookie : cookies) {
 			if ("token".equals(cookie.getName())) {
-				final Credentials credentials = new Credentials(cookie.getValue());
-				
-				final UsersDAO dao = new UsersDAO();
-				
-				return dao.checkLogin(credentials.getLogin(), credentials.getPassword());
+				return cookie;
+			}
+		}
+		
+		return null;
+	}
+	
+	private boolean checkToken(HttpServletRequest request)
+	throws DAOException, IllegalArgumentException {
+		final Cookie cookie = getTokenCookie(request);
+		
+		if (cookie != null) {
+			final Credentials credentials = new Credentials(cookie.getValue());
+			
+			final UsersDAO dao = new UsersDAO();
+			
+			if (dao.checkLogin(credentials.getLogin(), credentials.getPassword())) {
+				request.getSession().setAttribute("login", credentials.getLogin());
+				return true;
+			} else {
+				return false;
 			}
 		}
 		

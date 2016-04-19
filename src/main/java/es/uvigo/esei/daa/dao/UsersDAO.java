@@ -9,6 +9,8 @@ import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import es.uvigo.esei.daa.entities.User;
+
 /**
  * DAO class for managing the users of the system.
  * 
@@ -18,6 +20,36 @@ public class UsersDAO extends DAO {
 	private final static Logger LOG = Logger.getLogger(UsersDAO.class.getName());
 	
 	private final static String SALT = "daaexample-";
+	
+	/**
+	 * Returns a user stored persisted in the system.
+	 * 
+	 * @param login the login of the user to be retrieved.
+	 * @return a user with the provided login.
+	 * @throws DAOException if an error happens while retrieving the user.
+	 * @throws IllegalArgumentException if the provided login does not
+	 * corresponds with any persisted user.
+	 */
+	public User get(String login) throws DAOException {
+		try (final Connection conn = this.getConnection()) {
+			final String query = "SELECT * FROM users WHERE login=?";
+			
+			try (final PreparedStatement statement = conn.prepareStatement(query)) {
+				statement.setString(1, login);
+				
+				try (final ResultSet result = statement.executeQuery()) {
+					if (result.next()) {
+						return rowToEntity(result);
+					} else {
+						throw new IllegalArgumentException("Invalid id");
+					}
+				}
+			}
+		} catch (SQLException e) {
+			LOG.log(Level.SEVERE, "Error checking login", e);
+			throw new DAOException(e);
+		}
+	}
 
 	/**
 	 * Checks if the provided credentials (login and password) correspond with a
@@ -33,27 +65,12 @@ public class UsersDAO extends DAO {
 	 * @throws DAOException if an error happens while checking the credentials.
 	 */
 	public boolean checkLogin(String login, String password) throws DAOException {
-		try (final Connection conn = this.getConnection()) {
-			final String query = "SELECT password FROM users WHERE login=?";
-			
-			try (final PreparedStatement statement = conn.prepareStatement(query)) {
-				statement.setString(1, login);
-				
-				try (final ResultSet result = statement.executeQuery()) {
-					if (result.next()) {
-						final String dbPassword = result.getString("password");
-						final String shaPassword = encodeSha256(SALT + password);
-						
-						return shaPassword.equals(dbPassword);
-					} else {
-						return false;
-					}
-				}
-			}
-		} catch (SQLException e) {
-			LOG.log(Level.SEVERE, "Error checking login", e);
-			throw new DAOException(e);
-		}
+		final User user = this.get(login);
+		
+		final String dbPassword = user.getPassword();
+		final String shaPassword = encodeSha256(SALT + password);
+		
+		return shaPassword.equals(dbPassword);
 	}
 	
 	private final static String encodeSha256(String text) {
@@ -76,5 +93,12 @@ public class UsersDAO extends DAO {
 		}
 		
 		return sb.toString();
+	}
+
+	private User rowToEntity(ResultSet result) throws SQLException {
+		return new User(
+			result.getString("login"),
+			result.getString("password")
+		);
 	}
 }

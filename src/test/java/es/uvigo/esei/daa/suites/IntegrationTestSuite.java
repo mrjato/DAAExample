@@ -6,10 +6,12 @@ import org.junit.runners.Suite.SuiteClasses;
 
 import es.uvigo.esei.daa.dao.PeopleDAOTest;
 import es.uvigo.esei.daa.rest.PeopleResourceTest;
+import es.uvigo.esei.daa.rest.UsersResourceTest;
 
 @SuiteClasses({ 
 	PeopleDAOTest.class,
-	PeopleResourceTest.class
+	PeopleResourceTest.class,
+	UsersResourceTest.class
 })
 @RunWith(Suite.class)
 public class IntegrationTestSuite {
