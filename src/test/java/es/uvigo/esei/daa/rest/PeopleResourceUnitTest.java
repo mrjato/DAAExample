@@ -194,6 +194,18 @@ public class PeopleResourceUnitTest {
 	}
 
 	@Test
+	public void testModifyNullPointerException() throws Exception {
+		daoMock.modify(anyObject());
+		expectLastCall().andThrow(new NullPointerException());
+		
+		replay(daoMock);
+
+		final Response response = resource.modify(existentId(), newName(), newSurname());
+		
+		assertThat(response, hasBadRequestStatus());
+	}
+
+	@Test
 	public void testAdd() throws Exception {
 		expect(daoMock.add(newName(), newSurname()))
 			.andReturn(newPerson());
