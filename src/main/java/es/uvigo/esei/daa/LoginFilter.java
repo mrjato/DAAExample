@@ -101,7 +101,7 @@ public class LoginFilter implements Filter {
 	) throws IOException {
 		String redirectPath = request.getRequestURI();
 		if (request.getQueryString() != null)
-			redirectPath += request.getQueryString();
+			redirectPath += "?" + request.getQueryString();
 		
 		response.sendRedirect(redirectPath);
 	}
