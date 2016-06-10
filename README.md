@@ -17,7 +17,6 @@ manualmente (se usará una base de datos HSQL), se debe ejecutar el comando:
 `mvn -Dcargo.tomcat.start.skip=true -Dcargo.tomcat.run.skip=false
 -DskipTests=true pre-integration-test`
 * Si se desea arrancar el servidor con la base de datos MySQL, debe utilizarse
-el comando: `mvn -P run-tomcat-mysql,-acceptance-tests-cargo cargo:run`. Es
-necesario que el proyecto se haya empaquetado antes (p.ej. `mvn package`). En el
-directorio `db` del proyecto se pueden encontrar los scripts necesarios para
-crear la base de datos en MySQL.
+el comando: `mvn -DskipTests=true -P run-tomcat-mysql,-acceptance-tests-cargo
+clean package cargo:run`. En el directorio `db` del proyecto se pueden
+encontrar los scripts necesarios para crear la base de datos en MySQL.
