@@ -5,6 +5,7 @@
 .project
 .classpath
 .settings
+WebContent
 
 # Maven
 /bin
