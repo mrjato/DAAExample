@@ -55,6 +55,7 @@
 		<cargo-maven2-plugin.version>1.6.2</cargo-maven2-plugin.version>
 		<hsqldb-maven-plugin.version>1.0.0</hsqldb-maven-plugin.version>
 		<maven.antrun.plugin.version>1.8</maven.antrun.plugin.version>
+		<fizzed-watcher-maven-plugin.version>1.0.6</fizzed-watcher-maven-plugin.version>
 	</properties>
 
 	<dependencies>
@@ -506,6 +507,24 @@
 			
 			<build>
 				<plugins>
+					<plugin>
+						<groupId>com.fizzed</groupId>
+						<artifactId>fizzed-watcher-maven-plugin</artifactId>
+						<version>${fizzed-watcher-maven-plugin.version}</version>
+						<configuration>
+							<skipTouch>true</skipTouch>
+							<watches>
+								<watch>
+									<directory>src/main</directory>
+								</watch>
+							</watches>
+							<goals>
+								<goal>package</goal>
+								<goal>cargo:redeploy</goal>
+							</goals>
+						</configuration>
+					</plugin>
+					
 					<plugin>
 						<groupId>org.codehaus.cargo</groupId>
 						<artifactId>cargo-maven2-plugin</artifactId>
