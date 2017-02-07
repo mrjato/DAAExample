@@ -68,11 +68,11 @@ public class PeopleWebTest {
 		driver = new FirefoxDriver();
 		driver.get(baseUrl);
 		
-		// Login as "admin:admin"
-		driver.manage().addCookie(new Cookie("token", "YWRtaW46YWRtaW4="));
-		
 		// Driver will wait DEFAULT_WAIT_TIME if it doesn't find and element.
 		driver.manage().timeouts().implicitlyWait(DEFAULT_WAIT_TIME, TimeUnit.SECONDS);
+		
+		// Login as "admin:adminpass"
+		driver.manage().addCookie(new Cookie("token", "YWRtaW46YWRtaW5wYXNz"));
 		
 		mainPage = new MainPage(driver, baseUrl);
 		mainPage.navigateTo();
