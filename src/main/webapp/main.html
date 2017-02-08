@@ -11,12 +11,13 @@
 	</div>
 
 	<script type="text/javascript" src="http://code.jquery.com/jquery-2.2.0.min.js"></script>
+	<script type="text/javascript" src="js/dao/people.js"></script>
 	<script type="text/javascript" src="js/view/people.js"></script>
 	<script type="text/javascript">
 		$(document).ready(function() {
-			insertPeopleForm($('#people-container'));
-			insertPeopleList($('#people-container'));
-			initPeople();
+			var view = new PeopleView(new PeopleDAO(), 'people-container', 'people-container');
+			
+			view.init();
 		});
 	</script>
 </body>
