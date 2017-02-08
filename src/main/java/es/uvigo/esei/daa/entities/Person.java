@@ -89,7 +89,7 @@ public class Person {
 			return true;
 		if (obj == null)
 			return false;
-		if (getClass() != obj.getClass())
+		if (!(obj instanceof Person))
 			return false;
 		Person other = (Person) obj;
 		if (id != other.id)

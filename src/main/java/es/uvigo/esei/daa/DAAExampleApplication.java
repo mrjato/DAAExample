@@ -24,8 +24,10 @@ import es.uvigo.esei.daa.rest.UsersResource;
 public class DAAExampleApplication extends Application {
 	@Override
 	public Set<Class<?>> getClasses() {
-		return Stream.of(PeopleResource.class, UsersResource.class)
-			.collect(toSet());
+		return Stream.of(
+			PeopleResource.class,
+			UsersResource.class
+		).collect(toSet());
 	}
 	
 	@Override

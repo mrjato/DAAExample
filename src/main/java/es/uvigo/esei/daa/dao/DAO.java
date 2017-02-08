@@ -5,7 +5,6 @@ import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
@@ -27,11 +26,8 @@ public abstract class DAO {
 	 * Constructs a new instance of {@link DAO}.
 	 */
 	public DAO() {
-		Context initContext;
 		try {
-			initContext = new InitialContext();
-			
-			this.dataSource = (DataSource) initContext.lookup(JNDI_NAME);
+			this.dataSource = (DataSource) new InitialContext().lookup(JNDI_NAME);
 		} catch (NamingException e) {
 			LOG.log(Level.SEVERE, "Error initializing DAO", e);
 			throw new RuntimeException(e);

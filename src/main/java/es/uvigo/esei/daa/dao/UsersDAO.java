@@ -19,6 +19,7 @@ import es.uvigo.esei.daa.entities.User;
 public class UsersDAO extends DAO {
 	private final static Logger LOG = Logger.getLogger(UsersDAO.class.getName());
 	
+	// Yes, SALT should come from external configuration (for example, a property in Tomcat's context).
 	private final static String SALT = "daaexample-";
 	
 	/**
