@@ -45,6 +45,7 @@
 		<hsqldb.version>2.3.1</hsqldb.version>
 		<mysql.version>5.1.40</mysql.version>
 		<geckodriver.version>v0.14.0</geckodriver.version>
+		<equalsverifier.version>2.2.1</equalsverifier.version>
 		
 		<!-- Plugins -->
 		<maven-failsafe-plugin.version>2.19.1</maven-failsafe-plugin.version>
@@ -174,6 +175,12 @@
 			<artifactId>mysql-connector-java</artifactId>
 			<version>${mysql.version}</version>
 			<scope>test</scope>
+		</dependency>
+		
+		<dependency>
+		    <groupId>nl.jqno.equalsverifier</groupId>
+		    <artifactId>equalsverifier</artifactId>
+		    <version>${equalsverifier.version}</version>
 		</dependency>
 	</dependencies>
 

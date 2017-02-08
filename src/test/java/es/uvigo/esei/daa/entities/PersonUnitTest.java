@@ -7,6 +7,9 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
+import nl.jqno.equalsverifier.EqualsVerifier;
+import nl.jqno.equalsverifier.Warning;
+
 public class PersonUnitTest {
 	@Test
 	public void testPersonIntStringString() {
@@ -79,4 +82,12 @@ public class PersonUnitTest {
 		assertTrue(personA.equals(personB));
 	}
 
+	@Test
+	public void testEqualsHashcode() {
+		EqualsVerifier.forClass(Person.class)
+			.withIgnoredFields("name", "surname")
+			.suppress(Warning.STRICT_INHERITANCE)
+			.suppress(Warning.NONFINAL_FIELDS)
+		.verify();
+	}
 }
