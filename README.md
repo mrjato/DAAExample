@@ -7,16 +7,62 @@ Ingeniería Informática de la Universidad de Vigo.
 
 ## Ejecución con Maven
 La configuración de Maven ha sido preparada para permitir varios tipos de
-ejecución. En concreto:
-* La ejecución por defecto (p.ej. `mvn install`) incluye los tests de
-unidad, integración y aceptación (con Selenium).
-* Si no se desea ejecutar los tests de aceptación debe desactivarse el perfil
-`acceptance-tests-cargo`. Por ejemplo: `mvn -P -acceptance-tests-cargo install`.
-* Si se desea arrancar el servidor para ejecutar los tests de aceptación
-manualmente (se usará una base de datos HSQL), se debe ejecutar el comando:
-`mvn -Dcargo.tomcat.start.skip=true -Dcargo.tomcat.run.skip=false
--DskipTests=true pre-integration-test`
-* Si se desea arrancar el servidor con la base de datos MySQL, debe utilizarse
-el comando: `mvn -DskipTests=true -P run-tomcat-mysql,-acceptance-tests-cargo
-clean package cargo:run`. En el directorio `db` del proyecto se pueden
-encontrar los scripts necesarios para crear la base de datos en MySQL.
+ejecución.
+
+### Ejecución de la aplicación con Tomcat y MySQL
+
+El proyecto está configurado para poder ejecutar la aplicación sin tener que
+realizar ninguna configuración adicional salvo tener disponible un servidor
+MySQL en local.
+
+Los ficheros del proyecto `db/mysql.sql` y 'db/mysql-with-inserts.sql' contienen
+todas las consultas necesarias para crear la base de datos y el usuario
+requeridos, con o sin datos de ejemplo, respectivamente. Por lo tanto, podemos
+configurar inicialmente la base de datos con cualquiera de los siguientes
+comandos (desde la raíz el proyecto):
+
+* Sin datos: `mysql -u root -p < db/mysql.sql`
+* Con datos: `mysql -u root -p < db/mysql-with-inserts.sql`
+
+Una vez configurada la base de datos podemos lanzar la ejecución con el comando:
+
+`mvn -Prun-tomcat-mysql -DskipTests=true package cargo:start`
+
+Para parar la ejecución podemos utilizar `Ctrl+C`.
+
+### Ejecución de la aplicación con Tomcat y MySQL con redespliegue automático
+
+Durante el desarrollo es interesante que la apliación se redespliegue de forma
+automática cada vez que se hace un cambio. Para ello podemos utilizar el
+siguiente comand:
+
+`mvn -Prun-tomcat-mysql -DskipTests=true package cargo:start fizzed-watcher:run`
+
+Para parar la ejecución podemos utilizar `Ctrl+C`.
+
+### Construcción con tests de unidad e integración
+
+En esta construcción se ejecutarán todos los tests relacionados con el backend:
+
+* **Unidad**: se utilizan para testear las entidades y las capas DAO y REST de
+forma aislada.
+* **Integración**: se utilizan para testear las capas REST y DAO de forma
+integrada. Para este tipo de pruebas se utiliza una base de datos HSQL en
+memoria.
+
+El comando para lanzar esta construcción es:
+
+`mvn install`
+
+### Construcción con tests de unidad, integración y aceptación
+
+Esta construcción es similar a la previa, añadiendo las **pruebas de
+aceptación**, que comprueban que las fucionalidades de la aplicación están
+correctamente implementadas.
+
+En estas pruebas se descarga y arranca el un servidor Tomcat 8 en el que se
+despliega la aplicación configurada para utilizar una base de datos HSQL. Las
+pruebas se hacen sobre la interfaz web con Selenium, que iniciará un Firefox
+local de forma automática.
+
+`mvn -Pacceptance-tests-cargo install`
