@@ -81,18 +81,27 @@ var PeopleView = (function() {
 		this.editPerson = function(id) {
 			var row = $('#person-' + id);
 
-			console.log(row);
 			if (row !== undefined) {
 				var form = $(formQuery);
-				console.log(form);
-				console.log(row.find('td.name').text());
-				console.log(row.find('td.surname').text());
 				
 				form.find('input[name="id"]').val(id);
 				form.find('input[name="name"]').val(row.find('td.name').text());
 				form.find('input[name="surname"]').val(row.find('td.surname').text());
+				
+				$('input#btnSubmit').val('Modificar');
 			}
-		}
+		};
+		
+		this.deletePerson = function(id) {
+			if (confirm('Está a punto de eliminar a una persona. ¿Está seguro de que desea continuar?')) {
+				dao.deletePerson(id,
+					function() {
+						$('tr#person-' + id).remove();
+					},
+					showErrorMessage
+				);
+			}
+		};
 
 		this.isEditing = function() {
 			return $(formQuery + ' input[name="id"]').val() != "";
@@ -111,7 +120,7 @@ var PeopleView = (function() {
 			$(formQuery + ' input[name="id"]').val('');
 			$('#btnSubmit').val('Crear');
 		};
-	}
+	};
 	
 	var insertPeopleList = function(parent) {
 		parent.append(
@@ -124,7 +133,7 @@ var PeopleView = (function() {
 				</tr>\
 			</table>'
 		);
-	}
+	};
 
 	var insertPeopleForm = function(parent) {
 		parent.append(
@@ -136,7 +145,7 @@ var PeopleView = (function() {
 				<input id="btnClear" type="reset" value="Limpiar"/>\
 			</form>'
 		);
-	}
+	};
 
 	var createPersonRow = function(person) {
 		return '<tr id="person-'+ person.id +'">\
@@ -149,35 +158,27 @@ var PeopleView = (function() {
 				<a class="delete" href="#">Delete</a>\
 			</td>\
 		</tr>';
-	}
+	};
 
 	var showErrorMessage = function(jqxhr, textStatus, error) {
 		alert(textStatus + ": " + error);
-	}
+	};
 
 	var addRowListeners = function(person) {
 		$('#person-' + person.id + ' a.edit').click(function() {
 			self.editPerson(person.id);
-			$('input#btnSubmit').val('Modificar');
 		});
 		
 		$('#person-' + person.id + ' a.delete').click(function() {
-			if (confirm('Está a punto de eliminar a una persona. ¿Está seguro de que desea continuar?')) {
-				dao.deletePerson(person.id,
-					function() {
-						$('tr#person-' + person.id).remove();
-					},
-					showErrorMessage
-				);
-			}
+			self.deletePerson(person.id);
 		});
-	}
+	};
 
 	var appendToTable = function(person) {
 		$(listQuery + ' > tbody:last')
 			.append(createPersonRow(person));
 		addRowListeners(person);
-	}
+	};
 	
 	return PeopleView;
 })();
