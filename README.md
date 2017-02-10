@@ -28,7 +28,9 @@ Una vez configurada la base de datos podemos lanzar la ejecución con el comando
 
 `mvn -Prun-tomcat-mysql -DskipTests=true package cargo:start`
 
-Para parar la ejecución podemos utilizar `Ctrl+C`.
+La aplicación se servirá en la URL local: http://localhost:9080/DAAExample
+
+Para detener la ejecución podemos utilizar `Ctrl+C`.
 
 ### Ejecución de la aplicación con Tomcat y MySQL con redespliegue automático
 
@@ -38,7 +40,9 @@ siguiente comand:
 
 `mvn -Prun-tomcat-mysql -DskipTests=true package cargo:start fizzed-watcher:run`
 
-Para parar la ejecución podemos utilizar `Ctrl+C`.
+La aplicación se servirá en la URL local: http://localhost:9080/DAAExample
+
+Para detener la ejecución podemos utilizar `Ctrl+C`.
 
 ### Construcción con tests de unidad e integración
 
