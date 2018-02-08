@@ -24,38 +24,37 @@
 		<project.servers.directory>${project.basedir}/servers</project.servers.directory>
 		<cargo.tomcat.start.skip>false</cargo.tomcat.start.skip>
 		<cargo.tomcat.run.skip>true</cargo.tomcat.run.skip>
-		<tomcat.version>8.5.11</tomcat.version>
+		<tomcat.version>8.5.27</tomcat.version>
 		<jacoco.port>6300</jacoco.port>
-		<acceptance.tests>true</acceptance.tests>
-		
+    
 		<!-- General dependencies -->
 		<java.servlet.version>3.1.0</java.servlet.version>
 		<jersey.version>2.25</jersey.version>
-		<commons-dbcp2.version>2.1.1</commons-dbcp2.version>
-		<slf4j-jdk14.version>1.7.22</slf4j-jdk14.version>
-		
+		<commons-dbcp2.version>2.2.0</commons-dbcp2.version>
+		<slf4j-jdk14.version>1.7.21</slf4j-jdk14.version>
+
 		<!-- Tests dependencies -->
 		<junit.version>4.12</junit.version>
 		<java-hamcrest.version>2.0.0.0</java-hamcrest.version>
-		<easymock.version>3.4</easymock.version>
-		<selenium-java.version>3.0.1</selenium-java.version>
-		<spring-test.version>4.3.6.RELEASE</spring-test.version>
+		<easymock.version>3.5.1</easymock.version>
+		<selenium-java.version>3.8.1</selenium-java.version>
+		<spring-test.version>4.3.14.RELEASE</spring-test.version>
 		<dbunit.version>2.5.1</dbunit.version>
-		<spring-test-dbunit.version>1.2.1</spring-test-dbunit.version>
-		<hsqldb.version>2.3.1</hsqldb.version>
-		<mysql.version>5.1.40</mysql.version>
-		<geckodriver.version>v0.14.0</geckodriver.version>
-		<equalsverifier.version>2.2.1</equalsverifier.version>
-		
+		<spring-test-dbunit.version>1.3.0</spring-test-dbunit.version>
+		<hsqldb.version>2.3.3</hsqldb.version>
+		<mysql.version>5.1.45</mysql.version>
+		<geckodriver.version>v0.19.1</geckodriver.version>
+		<equalsverifier.version>2.4.2</equalsverifier.version>
+
 		<!-- Plugins -->
-		<maven-failsafe-plugin.version>2.19.1</maven-failsafe-plugin.version>
-		<maven-surefire-plugin.version>2.19.1</maven-surefire-plugin.version>
-		<maven-surefire-report-plugin.version>2.19.1</maven-surefire-report-plugin.version>
-		<maven.war.plugin.version>2.6</maven.war.plugin.version>
-		<jacoco-maven-plugin.version>0.7.8</jacoco-maven-plugin.version>
-		<cargo-maven2-plugin.version>1.6.2</cargo-maven2-plugin.version>
+		<maven-failsafe-plugin.version>2.20.1</maven-failsafe-plugin.version>
+		<maven-surefire-plugin.version>2.20.1</maven-surefire-plugin.version>
+		<maven-surefire-report-plugin.version>2.20.1</maven-surefire-report-plugin.version>
+		<maven-war-plugin.version>3.2.0</maven-war-plugin.version>
+		<jacoco-maven-plugin.version>0.8.0</jacoco-maven-plugin.version>
+		<cargo-maven2-plugin.version>1.6.6</cargo-maven2-plugin.version>
 		<hsqldb-maven-plugin.version>1.0.0</hsqldb-maven-plugin.version>
-		<maven.antrun.plugin.version>1.8</maven.antrun.plugin.version>
+		<maven-antrun-plugin.version>1.8</maven-antrun-plugin.version>
 		<fizzed-watcher-maven-plugin.version>1.0.6</fizzed-watcher-maven-plugin.version>
 	</properties>
 
@@ -66,13 +65,13 @@
 			<version>${java.servlet.version}</version>
 			<scope>provided</scope>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>org.glassfish.jersey.containers</groupId>
 			<artifactId>jersey-container-servlet</artifactId>
 			<version>${jersey.version}</version>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>org.glassfish.jersey.media</groupId>
 			<artifactId>jersey-media-json-jackson</artifactId>
@@ -92,20 +91,20 @@
 			<version>${junit.version}</version>
 			<scope>test</scope>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>org.hamcrest</groupId>
 			<artifactId>java-hamcrest</artifactId>
 			<version>${java-hamcrest.version}</version>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>org.easymock</groupId>
 			<artifactId>easymock</artifactId>
 			<version>${easymock.version}</version>
 			<scope>test</scope>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>org.glassfish.jersey.test-framework.providers</groupId>
 			<artifactId>jersey-test-framework-provider-grizzly2</artifactId>
@@ -133,21 +132,21 @@
 			<version>${spring-test.version}</version>
 			<scope>test</scope>
 		</dependency>
-		
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-context</artifactId>
-            <version>${spring-test.version}</version>
-            <scope>test</scope>
-        </dependency>
-        
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-jdbc</artifactId>
-            <version>${spring-test.version}</version>
-            <scope>test</scope>
-        </dependency>
-        
+
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context</artifactId>
+			<version>${spring-test.version}</version>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-jdbc</artifactId>
+			<version>${spring-test.version}</version>
+			<scope>test</scope>
+		</dependency>
+
 		<dependency>
 			<groupId>org.dbunit</groupId>
 			<artifactId>dbunit</artifactId>
@@ -155,7 +154,7 @@
 			<type>jar</type>
 			<scope>test</scope>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>com.github.springtestdbunit</groupId>
 			<artifactId>spring-test-dbunit</artifactId>
@@ -176,27 +175,27 @@
 			<version>${mysql.version}</version>
 			<scope>test</scope>
 		</dependency>
-		
+
 		<dependency>
-		    <groupId>nl.jqno.equalsverifier</groupId>
-		    <artifactId>equalsverifier</artifactId>
-		    <version>${equalsverifier.version}</version>
+			<groupId>nl.jqno.equalsverifier</groupId>
+			<artifactId>equalsverifier</artifactId>
+			<version>${equalsverifier.version}</version>
 		</dependency>
 	</dependencies>
 
 	<build>
 		<finalName>DAAExample</finalName>
-		
+
 		<plugins>
 			<plugin>
 				<artifactId>maven-war-plugin</artifactId>
 				<groupId>org.apache.maven.plugins</groupId>
-				<version>${maven.war.plugin.version}</version>
+				<version>${maven-war-plugin.version}</version>
 				<configuration>
 					<warName>${project.finalName}</warName>
 				</configuration>
 			</plugin>
-			
+
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
@@ -210,7 +209,7 @@
 					</systemPropertyVariables>
 				</configuration>
 			</plugin>
-			
+
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-failsafe-plugin</artifactId>
@@ -230,12 +229,12 @@
 					</execution>
 				</executions>
 			</plugin>
-				
+
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-report-plugin</artifactId>
 				<version>${maven-surefire-report-plugin.version}</version>
-				
+
 				<executions>
 					<execution>
 						<id>test-report</id>
@@ -254,13 +253,13 @@
 					</execution>
 				</executions>
 			</plugin>
-			
+
 			<plugin>
 				<groupId>org.jacoco</groupId>
 				<artifactId>jacoco-maven-plugin</artifactId>
 				<version>${jacoco-maven-plugin.version}</version>
 				<configuration>
-					<rules/>
+					<rules />
 					<port>${jacoco.port}</port>
 				</configuration>
 				<executions>
@@ -298,7 +297,8 @@
 		</plugins>
 		<pluginManagement>
 			<plugins>
-				<!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
+				<!--This plugin's configuration is used to store Eclipse m2e settings 
+					only. It has no influence on the Maven build itself. -->
 				<plugin>
 					<groupId>org.eclipse.m2e</groupId>
 					<artifactId>lifecycle-mapping</artifactId>
@@ -330,14 +330,14 @@
 			</plugins>
 		</pluginManagement>
 	</build>
-	
+
 	<profiles>
 		<profile>
 			<id>acceptance-tests-cargo</id>
 			<activation>
 				<activeByDefault>false</activeByDefault>
 			</activation>
-			
+
 			<build>
 				<plugins>
 					<plugin>
@@ -363,7 +363,7 @@
 							</execution>
 						</executions>
 					</plugin>
-					
+
 					<plugin>
 						<groupId>org.jacoco</groupId>
 						<artifactId>jacoco-maven-plugin</artifactId>
@@ -395,45 +395,43 @@
 							</execution>
 						</executions>
 					</plugin>
-					
+
 					<plugin>
-					    <!-- current version -->
-					    <groupId>fr.avianey.mojo</groupId>
-					    <artifactId>hsqldb-maven-plugin</artifactId>
-					    <version>${hsqldb-maven-plugin.version}</version>
-					
-					    <!-- 
-					        default value for in memory jdbc:hsqldb:hsql://localhost/xdb
-					        override only values you want to change
-					    -->
-					    <configuration>
-					        <driver>org.hsqldb.jdbc.JDBCDriver</driver>
-					        <path>mem:daatestdb</path>
-					        <address>localhost</address>
-					        <name>daatestdb</name>
-					        <username>sa</username>
-					        <password></password>
-					    </configuration>
-					
-					    <!-- call start and stop -->
-					    <executions>
-					        <execution>
-					            <id>start-hsqldb</id>
-					            <phase>pre-integration-test</phase>
-					            <goals>
-					                <goal>start</goal>
-					            </goals>
-					        </execution>
-					        <execution>
-					            <id>stop-hsqldb</id>
-					            <phase>post-integration-test</phase>
-					            <goals>
-					                <goal>stop</goal>
-					            </goals>
-					        </execution>
-					    </executions>
+						<!-- current version -->
+						<groupId>fr.avianey.mojo</groupId>
+						<artifactId>hsqldb-maven-plugin</artifactId>
+						<version>${hsqldb-maven-plugin.version}</version>
+
+						<!-- default value for in memory jdbc:hsqldb:hsql://localhost/xdb override 
+							only values you want to change -->
+						<configuration>
+							<driver>org.hsqldb.jdbc.JDBCDriver</driver>
+							<path>mem:daatestdb</path>
+							<address>localhost</address>
+							<name>daatestdb</name>
+							<username>sa</username>
+							<password></password>
+						</configuration>
+
+						<!-- call start and stop -->
+						<executions>
+							<execution>
+								<id>start-hsqldb</id>
+								<phase>pre-integration-test</phase>
+								<goals>
+									<goal>start</goal>
+								</goals>
+							</execution>
+							<execution>
+								<id>stop-hsqldb</id>
+								<phase>post-integration-test</phase>
+								<goals>
+									<goal>stop</goal>
+								</goals>
+							</execution>
+						</executions>
 					</plugin>
-					
+
 					<plugin>
 						<groupId>org.codehaus.cargo</groupId>
 						<artifactId>cargo-maven2-plugin</artifactId>
@@ -453,21 +451,22 @@
 									</dependency>
 								</dependencies>
 							</container>
-							
+
 							<configuration>
 								<home>${project.build.directory}/catalina-base</home>
 								<properties>
-									<cargo.jvmargs>${jacoco.agent.itArgLine},output=tcpserver,port=${jacoco.port} -Drunmode=TEST</cargo.jvmargs>
+									<cargo.jvmargs>${jacoco.agent.itArgLine},output=tcpserver,port=${jacoco.port}
+										-Drunmode=TEST</cargo.jvmargs>
 									<cargo.servlet.port>9080</cargo.servlet.port>
 									<cargo.datasource.datasource.h2>
-						                cargo.datasource.jndi=jdbc/daaexample|
+										cargo.datasource.jndi=jdbc/daaexample|
 										cargo.datasource.driver=org.hsqldb.jdbc.JDBCDriver|
-						                cargo.datasource.url=jdbc:hsqldb:hsql://localhost/daatestdb|
-						                cargo.datasource.username=sa|
-						                cargo.datasource.password=|
-						                cargo.datasource.maxActive=8|
-						                cargo.datasource.maxIdle=4|
-						                cargo.datasource.maxWait=10000
+										cargo.datasource.url=jdbc:hsqldb:hsql://localhost/daatestdb|
+										cargo.datasource.username=sa|
+										cargo.datasource.password=|
+										cargo.datasource.maxActive=8|
+										cargo.datasource.maxIdle=4|
+										cargo.datasource.maxWait=10000
 									</cargo.datasource.datasource.h2>
 								</properties>
 							</configuration>
@@ -505,13 +504,13 @@
 				</plugins>
 			</build>
 		</profile>
-		
+
 		<profile>
 			<id>run-tomcat-mysql</id>
 			<activation>
 				<activeByDefault>false</activeByDefault>
 			</activation>
-			
+
 			<build>
 				<plugins>
 					<plugin>
@@ -531,7 +530,7 @@
 							</goals>
 						</configuration>
 					</plugin>
-					
+
 					<plugin>
 						<groupId>org.codehaus.cargo</groupId>
 						<artifactId>cargo-maven2-plugin</artifactId>
@@ -551,20 +550,20 @@
 									</dependency>
 								</dependencies>
 							</container>
-							
+
 							<configuration>
 								<home>${project.build.directory}/catalina-base</home>
 								<properties>
 									<cargo.servlet.port>9080</cargo.servlet.port>
 									<cargo.datasource.datasource.h2>
-						                cargo.datasource.jndi=jdbc/daaexample|
+										cargo.datasource.jndi=jdbc/daaexample|
 										cargo.datasource.driver=com.mysql.jdbc.Driver|
-						                cargo.datasource.url=jdbc:mysql://localhost/daaexample|
-						                cargo.datasource.username=daa|
-						                cargo.datasource.password=daa|
-						                cargo.datasource.maxActive=8|
-						                cargo.datasource.maxIdle=4|
-						                cargo.datasource.maxWait=10000
+										cargo.datasource.url=jdbc:mysql://localhost/daaexample|
+										cargo.datasource.username=daa|
+										cargo.datasource.password=daa|
+										cargo.datasource.maxActive=8|
+										cargo.datasource.maxIdle=4|
+										cargo.datasource.maxWait=10000
 									</cargo.datasource.datasource.h2>
 								</properties>
 							</configuration>
@@ -573,11 +572,13 @@
 				</plugins>
 			</build>
 		</profile>
-		
+
 		<profile>
 			<id>geckodriver-download-unix</id>
 			<activation>
-				<os><family>unix</family></os>
+				<os>
+					<family>unix</family>
+				</os>
 			</activation>
 			<properties>
 				<geckodriver.url>https://github.com/mozilla/geckodriver/releases/download/${geckodriver.version}/geckodriver-${geckodriver.version}-${geckodriver.suffix}.tar.gz</geckodriver.url>
@@ -590,17 +591,19 @@
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-antrun-plugin</artifactId>
-						<version>${maven.antrun.plugin.version}</version>
+						<version>${maven-antrun-plugin.version}</version>
 						<executions>
 							<execution>
 								<id>download-geckodriver</id>
 								<phase>process-test-resources</phase>
 								<configuration>
 									<tasks>
-										<mkdir dir="${geckodriver.basepath}"/>
-										<get src="${geckodriver.url}" dest="${geckodriver.compressed.path}" skipexisting="true"/>
-										<untar src="${geckodriver.compressed.path}" dest="${geckodriver.basepath}" compression="gzip"/>
-										<chmod file="${geckodriver.uncompressed.path}" perm="a+x"/>
+										<mkdir dir="${geckodriver.basepath}" />
+										<get src="${geckodriver.url}" dest="${geckodriver.compressed.path}"
+											skipexisting="true" />
+										<untar src="${geckodriver.compressed.path}" dest="${geckodriver.basepath}"
+											compression="gzip" />
+										<chmod file="${geckodriver.uncompressed.path}" perm="a+x" />
 									</tasks>
 								</configuration>
 								<goals>
@@ -612,11 +615,13 @@
 				</plugins>
 			</build>
 		</profile>
-		
+
 		<profile>
 			<id>geckodriver-download-windows</id>
 			<activation>
-				<os><family>windows</family></os>
+				<os>
+					<family>windows</family>
+				</os>
 			</activation>
 			<properties>
 				<geckodriver.url>https://github.com/mozilla/geckodriver/releases/download/${geckodriver.version}/geckodriver-${geckodriver.version}-${geckodriver.suffix}.zip</geckodriver.url>
@@ -629,17 +634,18 @@
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-antrun-plugin</artifactId>
-						<version>${maven.antrun.plugin.version}</version>
+						<version>${maven-antrun-plugin.version}</version>
 						<executions>
 							<execution>
 								<id>download-geckodriver</id>
 								<phase>process-test-resources</phase>
 								<configuration>
 									<tasks>
-										<mkdir dir="${geckodriver.basepath}"/>
-										<get src="${geckodriver.url}" dest="${geckodriver.compressed.path}" skipexisting="true"/>
-										<unzip src="${geckodriver.compressed.path}" dest="${file.separator}${geckodriver.basepath}"/>
-										<chmod file="${geckodriver.uncompressed.path}" perm="a+x"/>
+										<mkdir dir="${geckodriver.basepath}" />
+										<get src="${geckodriver.url}" dest="${geckodriver.compressed.path}"
+											skipexisting="true" />
+										<unzip src="${geckodriver.compressed.path}" dest="${file.separator}${geckodriver.basepath}" />
+										<chmod file="${geckodriver.uncompressed.path}" perm="a+x" />
 									</tasks>
 								</configuration>
 								<goals>
@@ -651,7 +657,7 @@
 				</plugins>
 			</build>
 		</profile>
-		
+
 		<profile>
 			<id>geckodriver-properties-unix-amd64</id>
 			<activation>
@@ -664,7 +670,7 @@
 				<geckodriver.suffix>linux64</geckodriver.suffix>
 			</properties>
 		</profile>
-		
+
 		<profile>
 			<id>geckodriver-properties-unix-x86</id>
 			<activation>
@@ -677,7 +683,7 @@
 				<geckodriver.suffix>linux86</geckodriver.suffix>
 			</properties>
 		</profile>
-		
+
 		<profile>
 			<id>geckodriver-properties-windows-amd64</id>
 			<activation>
@@ -690,7 +696,7 @@
 				<geckodriver.suffix>win64</geckodriver.suffix>
 			</properties>
 		</profile>
-		
+
 		<profile>
 			<id>geckodriver-properties-windows-x86</id>
 			<activation>
@@ -703,7 +709,7 @@
 				<geckodriver.suffix>win86</geckodriver.suffix>
 			</properties>
 		</profile>
-		
+
 		<profile>
 			<id>geckodriver-properties-and-download-mac</id>
 			<activation>
@@ -723,17 +729,19 @@
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-antrun-plugin</artifactId>
-						<version>${maven.antrun.plugin.version}</version>
+						<version>${maven-antrun-plugin.version}</version>
 						<executions>
 							<execution>
 								<id>download-geckodriver</id>
 								<phase>process-test-resources</phase>
 								<configuration>
 									<tasks>
-										<mkdir dir="${geckodriver.basepath}"/>
-										<get src="${geckodriver.url}" dest="${geckodriver.compressed.path}" skipexisting="true"/>
-										<untar src="${geckodriver.compressed.path}" dest="${geckodriver.basepath}" compression="gzip"/>
-										<chmod file="${geckodriver.uncompressed.path}" perm="a+x"/>
+										<mkdir dir="${geckodriver.basepath}" />
+										<get src="${geckodriver.url}" dest="${geckodriver.compressed.path}"
+											skipexisting="true" />
+										<untar src="${geckodriver.compressed.path}" dest="${geckodriver.basepath}"
+											compression="gzip" />
+										<chmod file="${geckodriver.uncompressed.path}" perm="a+x" />
 									</tasks>
 								</configuration>
 								<goals>
