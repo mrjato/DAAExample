@@ -124,12 +124,11 @@ var PeopleView = (function() {
 	
 	var insertPeopleList = function(parent) {
 		parent.append(
-			'<table id="' + listId + '">\
-				<tr>\
-					<th>Nombre</th>\
-					<th>Apellido</th>\
-					<th></th>\
-					<th></th>\
+			'<table id="' + listId + '" class="table">\
+				<tr class="row">\
+					<th class="col-sm-4">Nombre</th>\
+					<th class="col-sm-5">Apellido</th>\
+					<th class="col-sm-3">&nbsp;</th>\
 				</tr>\
 			</table>'
 		);
@@ -137,25 +136,31 @@ var PeopleView = (function() {
 
 	var insertPeopleForm = function(parent) {
 		parent.append(
-			'<form id="' + formId + '">\
+			'<form id="' + formId + '" class="mb-5 mb-10">\
 				<input name="id" type="hidden" value=""/>\
-				<input name="name" type="text" value="" />\
-				<input name="surname" type="text" value=""/>\
-				<input id="btnSubmit" type="submit" value="Create"/>\
-				<input id="btnClear" type="reset" value="Limpiar"/>\
+				<div class="row">\
+					<div class="col-sm-4">\
+						<input name="name" type="text" value="" placeholder="Nombre" class="form-control" required/>\
+					</div>\
+					<div class="col-sm-5">\
+						<input name="surname" type="text" value="" placeholder="Apellido" class="form-control" required/>\
+					</div>\
+					<div class="col-sm-3">\
+						<input id="btnSubmit" type="submit" value="Crear" class="btn btn-primary" />\
+						<input id="btnClear" type="reset" value="Limpiar" class="btn" />\
+					</div>\
+				</div>\
 			</form>'
 		);
 	};
 
 	var createPersonRow = function(person) {
-		return '<tr id="person-'+ person.id +'">\
-			<td class="name">' + person.name + '</td>\
-			<td class="surname">' + person.surname + '</td>\
-			<td>\
-				<a class="edit" href="#">Edit</a>\
-			</td>\
-			<td>\
-				<a class="delete" href="#">Delete</a>\
+		return '<tr id="person-'+ person.id +'" class="row">\
+			<td class="name col-sm-4">' + person.name + '</td>\
+			<td class="surname col-sm-5">' + person.surname + '</td>\
+			<td class="col-sm-3">\
+				<a class="edit btn btn-primary" href="#">Editar</a>\
+				<a class="delete btn btn-warning" href="#">Eliminar</a>\
 			</td>\
 		</tr>';
 	};

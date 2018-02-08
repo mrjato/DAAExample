@@ -35,7 +35,7 @@ public class LoginFilter implements Filter {
 	private static final String LOGOUT_PATH = "/logout";
 	private static final String REST_PATH = "/rest";
 	private static final String[] PUBLIC_PATHS = new String[] {
-		"/index.html" // Add the paths that can be publicly accessed (e.g. /js, /css...)
+		"/index.html", "/js", "/css" // Add the paths that can be publicly accessed (e.g. /images...)
 	};
 
 	@Override
