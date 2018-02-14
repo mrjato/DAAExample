@@ -4,7 +4,7 @@
 	<groupId>es.uvigo.esei.daa</groupId>
 	<artifactId>example</artifactId>
 	<packaging>war</packaging>
-	<version>0.1.1</version>
+	<version>0.1.2</version>
 	<name>DAA Example</name>
 
 	<licenses>
@@ -597,14 +597,14 @@
 								<id>download-geckodriver</id>
 								<phase>process-test-resources</phase>
 								<configuration>
-									<tasks>
+                  <target>
 										<mkdir dir="${geckodriver.basepath}" />
 										<get src="${geckodriver.url}" dest="${geckodriver.compressed.path}"
 											skipexisting="true" />
 										<untar src="${geckodriver.compressed.path}" dest="${geckodriver.basepath}"
 											compression="gzip" />
 										<chmod file="${geckodriver.uncompressed.path}" perm="a+x" />
-									</tasks>
+                  </target>
 								</configuration>
 								<goals>
 									<goal>run</goal>
@@ -625,7 +625,7 @@
 			</activation>
 			<properties>
 				<geckodriver.url>https://github.com/mozilla/geckodriver/releases/download/${geckodriver.version}/geckodriver-${geckodriver.version}-${geckodriver.suffix}.zip</geckodriver.url>
-				<geckodriver.basepath>${settings.localRepository}${file.separator}geckodriver${file.separator}${os.name}${file.separator}${os.arch}${file.separator}${project.build.directory}${file.separator}</geckodriver.basepath>
+				<geckodriver.basepath>${settings.localRepository}${file.separator}geckodriver${file.separator}${os.name}${file.separator}${os.arch}</geckodriver.basepath>
 				<geckodriver.compressed.path>${geckodriver.basepath}${file.separator}geckodriver-${geckodriver.version}-${geckodriver.suffix}.zip</geckodriver.compressed.path>
 				<geckodriver.uncompressed.path>${geckodriver.basepath}${file.separator}geckodriver.exe</geckodriver.uncompressed.path>
 			</properties>
@@ -640,13 +640,13 @@
 								<id>download-geckodriver</id>
 								<phase>process-test-resources</phase>
 								<configuration>
-									<tasks>
+                  <target>
 										<mkdir dir="${geckodriver.basepath}" />
 										<get src="${geckodriver.url}" dest="${geckodriver.compressed.path}"
 											skipexisting="true" />
 										<unzip src="${geckodriver.compressed.path}" dest="${file.separator}${geckodriver.basepath}" />
 										<chmod file="${geckodriver.uncompressed.path}" perm="a+x" />
-									</tasks>
+                  </target>
 								</configuration>
 								<goals>
 									<goal>run</goal>
@@ -706,7 +706,7 @@
 				</os>
 			</activation>
 			<properties>
-				<geckodriver.suffix>win86</geckodriver.suffix>
+				<geckodriver.suffix>win32</geckodriver.suffix>
 			</properties>
 		</profile>
 
@@ -720,7 +720,7 @@
 			<properties>
 				<geckodriver.suffix>mac</geckodriver.suffix>
 				<geckodriver.url>https://github.com/mozilla/geckodriver/releases/download/${geckodriver.version}/geckodriver-${geckodriver.version}-${geckodriver.suffix}.tar.gz</geckodriver.url>
-				<geckodriver.basepath>${settings.localRepository}${file.separator}geckodriver${file.separator}${os.name}${file.separator}${os.arch}${file.separator}${project.build.directory}${file.separator}</geckodriver.basepath>
+				<geckodriver.basepath>${settings.localRepository}${file.separator}geckodriver${file.separator}${os.name}${file.separator}${os.arch}</geckodriver.basepath>
 				<geckodriver.compressed.path>${geckodriver.basepath}${file.separator}geckodriver-${geckodriver.version}-${geckodriver.suffix}.tar.gz</geckodriver.compressed.path>
 				<geckodriver.uncompressed.path>${geckodriver.basepath}${file.separator}geckodriver</geckodriver.uncompressed.path>
 			</properties>
@@ -735,14 +735,14 @@
 								<id>download-geckodriver</id>
 								<phase>process-test-resources</phase>
 								<configuration>
-									<tasks>
-										<mkdir dir="${geckodriver.basepath}" />
-										<get src="${geckodriver.url}" dest="${geckodriver.compressed.path}"
-											skipexisting="true" />
-										<untar src="${geckodriver.compressed.path}" dest="${geckodriver.basepath}"
-											compression="gzip" />
-										<chmod file="${geckodriver.uncompressed.path}" perm="a+x" />
-									</tasks>
+                  <target>
+                    <mkdir dir="${geckodriver.basepath}" />
+                    <get src="${geckodriver.url}" dest="${geckodriver.compressed.path}"
+                      skipexisting="true" />
+                    <untar src="${geckodriver.compressed.path}" dest="${geckodriver.basepath}"
+                      compression="gzip" />
+                    <chmod file="${geckodriver.uncompressed.path}" perm="a+x" />
+                  </target>
 								</configuration>
 								<goals>
 									<goal>run</goal>
