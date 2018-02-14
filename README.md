@@ -26,7 +26,7 @@ comandos (desde la raíz el proyecto):
 
 Una vez configurada la base de datos podemos lanzar la ejecución con el comando:
 
-`mvn -Prun-tomcat-mysql -DskipTests=true package cargo:start`
+`mvn -Prun-tomcat-mysql -DskipTests=true package cargo:run`
 
 La aplicación se servirá en la URL local: http://localhost:9080/DAAExample
 
