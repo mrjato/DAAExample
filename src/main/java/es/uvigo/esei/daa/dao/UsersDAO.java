@@ -66,12 +66,16 @@ public class UsersDAO extends DAO {
 	 * @throws DAOException if an error happens while checking the credentials.
 	 */
 	public boolean checkLogin(String login, String password) throws DAOException {
-		final User user = this.get(login);
-		
-		final String dbPassword = user.getPassword();
-		final String shaPassword = encodeSha256(SALT + password);
-		
-		return shaPassword.equals(dbPassword);
+		try {
+			final User user = this.get(login);
+			
+			final String dbPassword = user.getPassword();
+			final String shaPassword = encodeSha256(SALT + password);
+			
+			return shaPassword.equals(dbPassword);
+		} catch (IllegalArgumentException iae) {
+			return false;
+		}
 	}
 	
 	private final static String encodeSha256(String text) {
