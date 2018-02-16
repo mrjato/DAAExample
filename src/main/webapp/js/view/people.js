@@ -125,11 +125,15 @@ var PeopleView = (function() {
 	var insertPeopleList = function(parent) {
 		parent.append(
 			'<table id="' + listId + '" class="table">\
-				<tr class="row">\
-					<th class="col-sm-4">Nombre</th>\
-					<th class="col-sm-5">Apellido</th>\
-					<th class="col-sm-3">&nbsp;</th>\
-				</tr>\
+				<thead>\
+					<tr class="row">\
+						<th class="col-sm-4">Nombre</th>\
+						<th class="col-sm-5">Apellido</th>\
+						<th class="col-sm-3">&nbsp;</th>\
+					</tr>\
+				</thead>\
+				<tbody>\
+				</tbody>\
 			</table>'
 		);
 	};

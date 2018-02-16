@@ -1,5 +1,6 @@
 package es.uvigo.esei.daa.web.pages;
 
+import static es.uvigo.esei.daa.util.AdditionalConditions.jQueryAjaxCallsHaveCompleted;
 import static java.util.stream.Collectors.toList;
 import static org.openqa.selenium.support.ui.ExpectedConditions.presenceOfElementLocated;
 import static org.openqa.selenium.support.ui.ExpectedConditions.textToBePresentInElement;
@@ -85,6 +86,8 @@ public class MainPage {
 		final PeopleTable table = new PeopleTable(this.driver);
 		
 		table.deletePerson(id);
+		
+		wait.until(jQueryAjaxCallsHaveCompleted());
 	}
 	
 	private final static class PeopleTable {
@@ -129,7 +132,7 @@ public class MainPage {
 		}
 		
 		public Person getPersonInLastRow() {
-			final WebElement row = this.table.findElement(By.cssSelector("tr:last-child"));
+			final WebElement row = this.table.findElement(By.cssSelector("tbody > tr:last-child"));
 			
 			return rowToPerson(row);
 		}
@@ -139,14 +142,18 @@ public class MainPage {
 		}
 		
 		public WebElement getPersonRow(String name, String surname) {
-			final String xpathQuery = String.format(
-				"//td[@class = 'name' and text() = '%s']"
-				+ "/following-sibling::td[@class = 'surname' and text() = '%s']"
-				+ "/parent::tr",
-				name, surname
-			);
-
-			return table.findElement(By.xpath(xpathQuery));
+			final List<WebElement> rows = table.findElements(By.cssSelector("tbody > tr"));
+			
+			for (WebElement row : rows) {
+				final String rowName = row.findElement(By.className("name")).getText();
+				final String rowSurname = row.findElement(By.className("surname")).getText();
+				
+				if (rowName.equals(name) && rowSurname.equals(surname)) {
+					return row;
+				}
+			}
+			
+			throw new IllegalArgumentException(String.format("No row found with name '%s' and surname '%s'", name, surname));
 		}
 		
 		public int countPeople() {
@@ -160,7 +167,7 @@ public class MainPage {
 		}
 		
 		private List<WebElement> getRows() {
-			final String xpathQuery = "//tr[starts-with(@id, '" + ID_PREFIX + "')]";
+			final String xpathQuery = "//tbody/tr[starts-with(@id, '" + ID_PREFIX + "')]";
 			
 			return this.table.findElements(By.xpath(xpathQuery));
 		}
