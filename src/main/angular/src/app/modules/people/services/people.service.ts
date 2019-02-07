@@ -1,0 +1,56 @@
+/*
+ * DAA Example
+ *
+ * Copyright (C) 2019 - Miguel Reboiro-Jato.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+
+import {Injectable} from '@angular/core';
+import {HttpClient, HttpHeaders, HttpParams} from '@angular/common/http';
+import {environment} from '../../../../environments/environment';
+import {Observable} from 'rxjs';
+import {PersonModel} from '../models/person.model';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class PeopleService {
+
+  public constructor(private readonly http: HttpClient) { }
+
+  public list(): Observable<PersonModel[]> {
+    return this.http.get<PersonModel[]>(`${environment.restApi}/people`);
+  }
+
+  public create(person: PersonModel): Observable<PersonModel> {
+    const data = new HttpParams()
+      .set('name', person.name)
+      .set('surname', person.surname);
+
+    return this.http.post<PersonModel>(`${environment.restApi}/people`, data);
+  }
+
+  public modify(person: PersonModel): Observable<PersonModel> {
+    const data = new HttpParams()
+      .set('name', person.name)
+      .set('surname', person.surname);
+
+    return this.http.put<PersonModel>(`${environment.restApi}/people/${person.id}`, data);
+  }
+
+  public delete(person: PersonModel): Observable<number> {
+    return this.http.delete<number>(`${environment.restApi}/people/${person.id}`);
+  }
+}

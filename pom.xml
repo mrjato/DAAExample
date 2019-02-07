@@ -48,6 +48,8 @@
 		<equalsverifier.version>2.4.2</equalsverifier.version>
 
 		<!-- Plugins -->
+		<exec-maven-plugin.version>1.6.0</exec-maven-plugin.version>
+		<maven-compiler-plugin.version>3.7.0</maven-compiler-plugin.version>
 		<maven-failsafe-plugin.version>2.20.1</maven-failsafe-plugin.version>
 		<maven-surefire-plugin.version>2.20.1</maven-surefire-plugin.version>
 		<maven-surefire-report-plugin.version>2.20.1</maven-surefire-report-plugin.version>
@@ -189,12 +191,74 @@
 
 		<plugins>
 			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>${maven-compiler-plugin.version}</version>
+				<configuration>
+					<excludes>
+						<exclude>angular/**</exclude>
+					</excludes>
+				</configuration>
+			</plugin>
+
+
+			<plugin>
 				<artifactId>maven-war-plugin</artifactId>
 				<groupId>org.apache.maven.plugins</groupId>
 				<version>${maven-war-plugin.version}</version>
 				<configuration>
 					<warName>${project.finalName}</warName>
+					<excludes>
+						<exclude>angular/**</exclude>
+					</excludes>
+					<webappDirectory>${war.webapp.directory}</webappDirectory>
+					<webResources>
+						<webResource>
+							<directory>${project.basedir}/src/main/webapp</directory>
+						</webResource>
+						<webResource>
+							<directory>${project.basedir}/src/main/angular/dist/angular</directory>
+						</webResource>
+					</webResources>
 				</configuration>
+			</plugin>
+
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>exec-maven-plugin</artifactId>
+				<version>${exec-maven-plugin.version}</version>
+				<executions>
+					<execution>
+						<id>exec-npm-install</id>
+						<phase>generate-sources</phase>
+						<configuration>
+							<skip>${skip-npm-install}</skip>
+							<workingDirectory>${project.basedir}/src/main/angular</workingDirectory>
+							<executable>npm</executable>
+							<arguments>
+								<argument>install</argument>
+							</arguments>
+						</configuration>
+						<goals>
+							<goal>exec</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>exec-npm-ng-build</id>
+						<phase>generate-sources</phase>
+						<configuration>
+							<workingDirectory>${project.basedir}/src/main/angular</workingDirectory>
+							<executable>npm</executable>
+							<arguments>
+								<argument>run</argument>
+								<argument>build</argument>
+							</arguments>
+						</configuration>
+						<goals>
+							<goal>exec</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 
 			<plugin>
@@ -298,8 +362,7 @@
 		</plugins>
 		<pluginManagement>
 			<plugins>
-				<!--This plugin's configuration is used to store Eclipse m2e settings 
-					only. It has no influence on the Maven build itself. -->
+				<!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
 				<plugin>
 					<groupId>org.eclipse.m2e</groupId>
 					<artifactId>lifecycle-mapping</artifactId>
@@ -310,12 +373,33 @@
 								<pluginExecution>
 									<pluginExecutionFilter>
 										<groupId>
+											org.codehaus.mojo
+										</groupId>
+										<artifactId>
+											exec-maven-plugin
+										</artifactId>
+										<versionRange>
+											[1.6.0,)
+										</versionRange>
+										<goals>
+											<goal>exec</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<ignore></ignore>
+									</action>
+								</pluginExecution>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>
 											org.apache.maven.plugins
 										</groupId>
 										<artifactId>
 											maven-antrun-plugin
 										</artifactId>
-										<versionRange>[1.3,)</versionRange>
+										<versionRange>
+											[1.8,)
+										</versionRange>
 										<goals>
 											<goal>run</goal>
 										</goals>
@@ -517,6 +601,9 @@
 			<activation>
 				<activeByDefault>false</activeByDefault>
 			</activation>
+			<properties>
+				<skip-npm-install>true</skip-npm-install>
+			</properties>
 
 			<build>
 				<plugins>

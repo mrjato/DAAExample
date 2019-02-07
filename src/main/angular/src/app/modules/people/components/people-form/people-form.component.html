@@ -1,0 +1,39 @@
+<!--
+  ~ DAA Example
+  ~
+  ~ Copyright (C) 2019 - Miguel Reboiro-Jato.
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program. If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<form class="mb-5 mb-10">
+  <input name="id" type="hidden" value=""/>
+
+  <div class="row">
+    <div class="col-sm-4">
+      <input name="name" type="text" value="" placeholder="Nombre" class="form-control" required [(ngModel)]="name"/>
+    </div>
+
+    <div class="col-sm-5">
+      <input name="surname" type="text" value="" placeholder="Apellido" class="form-control" required
+             [(ngModel)]="surname"/>
+    </div>
+
+    <div class="col-sm-3">
+      <button id="btnSubmit" class="btn btn-primary"
+              (click)="onModify()">{{person.id === undefined ? 'Crear' : 'Editar'}}</button>
+      <button id="btnClear" class="btn" (click)="onClean()">Limpiar</button>
+    </div>
+  </div>
+</form>
