@@ -1,10 +1,11 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>es.uvigo.esei.daa</groupId>
 	<artifactId>example</artifactId>
 	<packaging>war</packaging>
-	<version>0.1.9</version>
+	<version>0.1.10</version>
 	<name>DAA Example</name>
 
 	<licenses>
@@ -26,7 +27,7 @@
 		<cargo.tomcat.run.skip>true</cargo.tomcat.run.skip>
 		<tomcat.version>8.5.27</tomcat.version>
 		<jacoco.port>6300</jacoco.port>
-    
+
 		<!-- General dependencies -->
 		<java.servlet.version>3.1.0</java.servlet.version>
 		<jersey.version>2.25</jersey.version>
@@ -37,13 +38,13 @@
 		<junit.version>4.12</junit.version>
 		<java-hamcrest.version>2.0.0.0</java-hamcrest.version>
 		<easymock.version>3.5.1</easymock.version>
-		<selenium-java.version>3.8.1</selenium-java.version>
+		<selenium-java.version>3.141.59</selenium-java.version>
 		<spring-test.version>4.3.14.RELEASE</spring-test.version>
 		<dbunit.version>2.5.1</dbunit.version>
 		<spring-test-dbunit.version>1.3.0</spring-test-dbunit.version>
 		<hsqldb.version>2.3.3</hsqldb.version>
 		<mysql.version>5.1.45</mysql.version>
-		<geckodriver.version>v0.19.1</geckodriver.version>
+		<geckodriver.version>v0.24.0</geckodriver.version>
 		<equalsverifier.version>2.4.2</equalsverifier.version>
 
 		<!-- Plugins -->
@@ -320,7 +321,7 @@
 										</goals>
 									</pluginExecutionFilter>
 									<action>
-										<ignore></ignore>
+										<ignore />
 									</action>
 								</pluginExecution>
 							</pluginExecutions>
@@ -410,7 +411,7 @@
 							<address>localhost</address>
 							<name>daatestdb</name>
 							<username>sa</username>
-							<password></password>
+							<password />
 						</configuration>
 
 						<!-- call start and stop -->
@@ -454,6 +455,12 @@
 
 							<configuration>
 								<home>${project.build.directory}/catalina-base</home>
+								<files>
+									<copy>
+										<file>tomcat/server.hsqldb.xml</file>
+										<tofile>conf/server.xml</tofile>
+									</copy>
+								</files>
 								<properties>
 									<cargo.jvmargs>${jacoco.agent.itArgLine},output=tcpserver,port=${jacoco.port}
 										-Drunmode=TEST</cargo.jvmargs>
@@ -553,6 +560,12 @@
 
 							<configuration>
 								<home>${project.build.directory}/catalina-base</home>
+								<files>
+									<copy>
+										<file>tomcat/server.mysql.xml</file>
+										<tofile>conf/server.xml</tofile>
+									</copy>
+								</files>
 								<properties>
 									<cargo.servlet.port>9080</cargo.servlet.port>
 									<cargo.datasource.datasource.h2>
@@ -597,14 +610,15 @@
 								<id>download-geckodriver</id>
 								<phase>process-test-resources</phase>
 								<configuration>
-                  <target>
+									<target>
 										<mkdir dir="${geckodriver.basepath}" />
-										<get src="${geckodriver.url}" dest="${geckodriver.compressed.path}"
-											skipexisting="true" />
-										<untar src="${geckodriver.compressed.path}" dest="${geckodriver.basepath}"
-											compression="gzip" />
-										<chmod file="${geckodriver.uncompressed.path}" perm="a+x" />
-                  </target>
+										<get src="${geckodriver.url}"
+											dest="${geckodriver.compressed.path}" skipexisting="true" />
+										<untar src="${geckodriver.compressed.path}"
+											dest="${geckodriver.basepath}" compression="gzip" />
+										<chmod file="${geckodriver.uncompressed.path}"
+											perm="a+x" />
+									</target>
 								</configuration>
 								<goals>
 									<goal>run</goal>
@@ -640,13 +654,15 @@
 								<id>download-geckodriver</id>
 								<phase>process-test-resources</phase>
 								<configuration>
-                  <target>
+									<target>
 										<mkdir dir="${geckodriver.basepath}" />
-										<get src="${geckodriver.url}" dest="${geckodriver.compressed.path}"
-											skipexisting="true" />
-										<unzip src="${geckodriver.compressed.path}" dest="${file.separator}${geckodriver.basepath}" />
-										<chmod file="${geckodriver.uncompressed.path}" perm="a+x" />
-                  </target>
+										<get src="${geckodriver.url}"
+											dest="${geckodriver.compressed.path}" skipexisting="true" />
+										<unzip src="${geckodriver.compressed.path}"
+											dest="${file.separator}${geckodriver.basepath}" />
+										<chmod file="${geckodriver.uncompressed.path}"
+											perm="a+x" />
+									</target>
 								</configuration>
 								<goals>
 									<goal>run</goal>
@@ -735,14 +751,15 @@
 								<id>download-geckodriver</id>
 								<phase>process-test-resources</phase>
 								<configuration>
-                  <target>
-                    <mkdir dir="${geckodriver.basepath}" />
-                    <get src="${geckodriver.url}" dest="${geckodriver.compressed.path}"
-                      skipexisting="true" />
-                    <untar src="${geckodriver.compressed.path}" dest="${geckodriver.basepath}"
-                      compression="gzip" />
-                    <chmod file="${geckodriver.uncompressed.path}" perm="a+x" />
-                  </target>
+									<target>
+										<mkdir dir="${geckodriver.basepath}" />
+										<get src="${geckodriver.url}"
+											dest="${geckodriver.compressed.path}" skipexisting="true" />
+										<untar src="${geckodriver.compressed.path}"
+											dest="${geckodriver.basepath}" compression="gzip" />
+										<chmod file="${geckodriver.uncompressed.path}"
+											perm="a+x" />
+									</target>
 								</configuration>
 								<goals>
 									<goal>run</goal>

@@ -20,9 +20,12 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.openqa.selenium.Cookie;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.firefox.FirefoxOptions;
+import org.openqa.selenium.firefox.FirefoxProfile;
+import org.openqa.selenium.html5.LocalStorage;
+import org.openqa.selenium.remote.DesiredCapabilities;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -64,15 +67,24 @@ public class PeopleWebTest {
 	@Before
 	public void setUp() throws Exception {
 		final String baseUrl = "http://localhost:9080/DAAExample/";
+
+		final FirefoxProfile profile = new FirefoxProfile();
+		profile.setPreference("browser.privatebrowsing.autostart", true);
 		
-		driver = new FirefoxDriver();
+		final FirefoxOptions options = new FirefoxOptions(DesiredCapabilities.firefox());
+		options.setProfile(profile);
+		
+		final FirefoxDriver firefoxDriver;
+		driver = firefoxDriver = new FirefoxDriver();
 		driver.get(baseUrl);
 		
 		// Driver will wait DEFAULT_WAIT_TIME if it doesn't find and element.
 		driver.manage().timeouts().implicitlyWait(DEFAULT_WAIT_TIME, TimeUnit.SECONDS);
-		
+		driver.manage().window().maximize();
+
 		// Login as "admin:adminpass"
-		driver.manage().addCookie(new Cookie("token", "YWRtaW46YWRtaW5wYXNz"));
+		final LocalStorage localStorage = firefoxDriver.getLocalStorage();
+		localStorage.setItem("authorization-token", "YWRtaW46YWRtaW5wYXNz");
 		
 		mainPage = new MainPage(driver, baseUrl);
 		mainPage.navigateTo();

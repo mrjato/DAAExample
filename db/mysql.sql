@@ -10,6 +10,7 @@ CREATE TABLE `daaexample`.`people` (
 CREATE TABLE `daaexample`.`users` (
 	`login` varchar(100) NOT NULL,
 	`password` varchar(64) NOT NULL,
+	`role` varchar(10) NOT NULL,
 	PRIMARY KEY (`login`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

@@ -1,40 +1,50 @@
 <!DOCTYPE html>
 <html>
-	<head>
-		<meta charset="UTF-8">
-		
-		<title>DAA Example</title>
-		
-		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
-	</head>
-	<body>
-		<header>
-			<div class="navbar navbar-dark bg-dark box-shadow">
-				<div class="container d-flex justify-content-between">
-					<a href="#" class="navbar-brand d-flex align-items-center">
-					   <strong>DAA Example</strong>
-					</a>
-					
-          <a id="#logout" href="logout" class="btn btn-dark" role="button">Cerrar sesión</a>
-				</div>
-			</div>
-		</header>
+<head>
+<meta charset="UTF-8">
 
-		<div class="container">
-			<div id="people-container">
-				<h1 class="display-5 mt-3 mb-3">Personas</h1>
+<title>DAA Example</title>
+
+<link rel="stylesheet"
+	href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+</head>
+<body>
+	<header>
+		<div class="navbar navbar-dark bg-dark box-shadow">
+			<div class="container d-flex justify-content-between">
+				<a href="#" class="navbar-brand d-flex align-items-center">
+					<strong>DAA	Example</strong>
+				</a>
+				<button id="logout" class="btn btn-dark">Cerrar sesión</button>
 			</div>
 		</div>
+	</header>
 
-	<script type="text/javascript" src="http://code.jquery.com/jquery-2.2.4.min.js"></script>
-		<script type="text/javascript" src="js/dao/people.js"></script>
-		<script type="text/javascript" src="js/view/people.js"></script>
-		<script type="text/javascript">
-			$(document).ready(function() {
-				var view = new PeopleView(new PeopleDAO(), 'people-container', 'people-container');
-				
-				view.init();
-			});
-		</script>
-	</body>
+	<div class="container">
+		<div id="people-container">
+			<h1 class="display-5 mt-3 mb-3">Personas</h1>
+		</div>
+	</div>
+	
+	<script type="text/javascript"
+		src="http://code.jquery.com/jquery-2.2.4.min.js"></script>
+	<script type="text/javascript" src="js/dao/people.js"></script>
+	<script type="text/javascript" src="js/view/people.js"></script>
+	<script type="text/javascript" src="js/login.js"></script>
+	<script type="text/javascript">
+	$(document).ready(
+		function() {
+		    $('#logout').click(function(event) {
+				event.preventDefault();
+				doLogout();
+		    });
+
+		    var view = new PeopleView(new PeopleDAO(),
+		    	'people-container', 'people-container'
+	    	);
+
+		    view.init();
+		});
+    </script>
+</body>
 </html>

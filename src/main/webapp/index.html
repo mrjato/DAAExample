@@ -1,25 +1,45 @@
 <!DOCTYPE html>
 <html>
-	<head>
-		<meta charset="UTF-8">
-		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-		
-		<title>DAA Example - Login</title>
-		
-		<link rel="stylesheet" href="css/login.css">
-		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
-	</head>
-	<body class="text-center">
-		<form class="form-singin" action="main.html" method="POST">
-		  <h1 class="h1 mb-3 font-weight-normal">DAA Example</h1>
-		  
-			<label for="login" class="sr-only">Usuario</label>
-			<input id="login" name="login" type="text" class="form-control" placeholder="Usuario" required autofocus />
-			
-			<label for="password" class="sr-only">Contraseña</label>
-			<input id="password" name="password" type="password" class="form-control" placeholder="Contraseña" required />
-			
-			<button type="submit" class="btn btn-lg btn-primary btn-block mt-3">Entrar</button>
-		</form>
-	</body>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport"
+	content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+<title>DAA Example - Login</title>
+
+<link rel="stylesheet" href="css/login.css">
+<link rel="stylesheet"
+	href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+</head>
+<body class="text-center">
+	<form id="form-singin">
+		<h1 class="h1 mb-3 font-weight-normal">DAA Example</h1>
+
+		<label for="login" class="sr-only">Usuario</label> <input id="login"
+			name="login" type="text" class="form-control" placeholder="Usuario"
+			required autofocus /> <label for="password" class="sr-only">Contraseña</label>
+		<input id="password" name="password" type="password"
+			class="form-control" placeholder="Contraseña" required />
+
+		<button type="submit" class="btn btn-lg btn-primary btn-block mt-3">Entrar</button>
+	</form>
+
+	<script type="text/javascript"
+		src="http://code.jquery.com/jquery-2.2.4.min.js"></script>
+	<script
+		src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script>
+	<script type="text/javascript" src="js/login.js"></script>
+	<script type="text/javascript">
+	$(document).ready(function() {
+	    $('#form-singin').submit(function(event) {
+		event.preventDefault();
+
+		var login = $('#login').val();
+		var password = $('#password').val();
+
+		doLogin(login, password);
+	    });
+	});
+    </script>
+</body>
 </html>

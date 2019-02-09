@@ -4,7 +4,6 @@ import static es.uvigo.esei.daa.dataset.UsersDataset.adminLogin;
 import static es.uvigo.esei.daa.dataset.UsersDataset.normalLogin;
 import static es.uvigo.esei.daa.dataset.UsersDataset.user;
 import static es.uvigo.esei.daa.dataset.UsersDataset.userToken;
-import static es.uvigo.esei.daa.matchers.HasHttpStatus.hasForbidden;
 import static es.uvigo.esei.daa.matchers.HasHttpStatus.hasOkStatus;
 import static es.uvigo.esei.daa.matchers.HasHttpStatus.hasUnauthorized;
 import static es.uvigo.esei.daa.matchers.IsEqualToUser.equalsToUser;
@@ -36,8 +35,7 @@ import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 import com.github.springtestdbunit.annotation.ExpectedDatabase;
 
-import es.uvigo.esei.daa.DAAExampleApplication;
-import es.uvigo.esei.daa.LoginFilter;
+import es.uvigo.esei.daa.DAAExampleTestApplication;
 import es.uvigo.esei.daa.entities.User;
 import es.uvigo.esei.daa.listeners.ApplicationContextBinding;
 import es.uvigo.esei.daa.listeners.ApplicationContextJndiBindingTestExecutionListener;
@@ -64,7 +62,7 @@ import es.uvigo.esei.daa.listeners.DbManagementTestExecutionListener;
 public class UsersResourceTest extends JerseyTest {
 	@Override
 	protected Application configure() {
-		return new DAAExampleApplication();
+		return new DAAExampleTestApplication();
 	}
 
 	@Override
@@ -87,7 +85,6 @@ public class UsersResourceTest extends JerseyTest {
 			new ServletContainer(ResourceConfig.forApplication(configure()))
 		)
 			.servletPath("/rest")
-			.addFilter(LoginFilter.class, "login-filter")
 		.build();
 	}
 	
@@ -96,7 +93,7 @@ public class UsersResourceTest extends JerseyTest {
 		final String admin = adminLogin();
 		
 		final Response response = target("users/" + admin).request()
-			.cookie("token", userToken(admin))
+			.header("Authorization", "Basic " + userToken(admin))
 		.get();
 		assertThat(response, hasOkStatus());
 		
@@ -111,7 +108,7 @@ public class UsersResourceTest extends JerseyTest {
 		final String otherUser = normalLogin();
 		
 		final Response response = target("users/" + otherUser).request()
-			.cookie("token", userToken(admin))
+			.header("Authorization", "Basic " + userToken(admin))
 		.get();
 		assertThat(response, hasOkStatus());
 		
@@ -125,7 +122,7 @@ public class UsersResourceTest extends JerseyTest {
 		final String login = normalLogin();
 		
 		final Response response = target("users/" + login).request()
-			.cookie("token", userToken(login))
+			.header("Authorization", "Basic " + userToken(login))
 		.get();
 		assertThat(response, hasOkStatus());
 		
@@ -138,22 +135,22 @@ public class UsersResourceTest extends JerseyTest {
 	public void testGetNoCredentials() throws IOException {
 		final Response response = target("users/" + normalLogin()).request().get();
 		
-		assertThat(response, hasForbidden());
+		assertThat(response, hasUnauthorized());
 	}
 	
 	@Test
 	public void testGetBadCredentials() throws IOException {
 		final Response response = target("users/" + adminLogin()).request()
-			.cookie("token", "YmFkOmNyZWRlbnRpYWxz")
+			.header("Authorization", "Basic YmFkOmNyZWRlbnRpYWxz")
 		.get();
 		
-		assertThat(response, hasForbidden());
+		assertThat(response, hasUnauthorized());
 	}
 	
 	@Test
 	public void testGetIllegalAccess() throws IOException {
 		final Response response = target("users/" + adminLogin()).request()
-			.cookie("token", userToken(normalLogin()))
+			.header("Authorization", "Basic " + userToken(normalLogin()))
 		.get();
 		
 		assertThat(response, hasUnauthorized());

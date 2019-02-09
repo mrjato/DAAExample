@@ -10,4 +10,5 @@
 <!ATTLIST users
     login CDATA #IMPLIED
     password CDATA #IMPLIED
+    role CDATA #IMPLIED
 >

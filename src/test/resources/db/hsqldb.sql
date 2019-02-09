@@ -8,5 +8,6 @@ CREATE TABLE people (
 CREATE TABLE users (
 	login VARCHAR(100) NOT NULL,
 	password VARCHAR(64) NOT NULL,
+	role VARCHAR(5) NOT NULL,
 	PRIMARY KEY (login)
 );

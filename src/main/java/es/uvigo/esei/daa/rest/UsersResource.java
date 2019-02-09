@@ -3,7 +3,6 @@ package es.uvigo.esei.daa.rest;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -11,6 +10,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.SecurityContext;
 
 import es.uvigo.esei.daa.dao.DAOException;
 import es.uvigo.esei.daa.dao.UsersDAO;
@@ -26,9 +26,7 @@ public class UsersResource {
 	
 	private final UsersDAO dao;
 	
-	// The HttpServletRequest can be also injected as a parameter in the REST
-	// methods.
-	private @Context HttpServletRequest request;
+	private @Context SecurityContext security;
 	
 	/**
 	 * Constructs a new instance of {@link UsersResource}.
@@ -43,9 +41,9 @@ public class UsersResource {
 	}
 	
 	// Needed for testing purposes
-	UsersResource(UsersDAO dao, HttpServletRequest request) {
+	UsersResource(UsersDAO dao, SecurityContext security) {
 		this.dao = dao;
-		this.request = request;
+		this.security = security;
 	}
 	
 	/**
@@ -71,7 +69,7 @@ public class UsersResource {
 		
 		// Each user can only access his or her own data. Only the admin user
 		// can access the data of any user.
-		if (loggedUser.equals(login) || loggedUser.equals("admin")) {
+		if (loggedUser.equals(login) || this.isAdmin()) {
 			try {
 				return Response.ok(dao.get(login)).build();
 			} catch (IllegalArgumentException iae) {
@@ -93,6 +91,10 @@ public class UsersResource {
 	}
 	
 	private String getLogin() {
-		return (String) request.getSession().getAttribute("login");
+		return this.security.getUserPrincipal().getName();
+	}
+	
+	private boolean isAdmin() {
+		return this.security.isUserInRole("ADMIN");
 	}
 }

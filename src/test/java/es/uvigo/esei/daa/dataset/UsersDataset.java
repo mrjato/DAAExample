@@ -10,8 +10,8 @@ public final class UsersDataset {
 
 	public static User[] users() {
 		return new User[] {
-			new User(adminLogin(), "43f413b773f7d0cfad0e8e6529ec1249ce71e8697919eab30d82d800a3986b70"),
-			new User(normalLogin(), "688f21dd2d65970f174e2c9d35159250a8a23e27585452683db8c5d10b586336")
+			new User(adminLogin(), "713bfda78870bf9d1b261f565286f85e97ee614efe5f0faf7c34e7ca4f65baca", "ADMIN"),
+			new User(normalLogin(), "7bf24d6ca2242430343ab7e3efb89559a47784eea1123be989c1b2fb2ef66e83", "USER")
 		};
 	}
 	

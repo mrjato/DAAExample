@@ -10,6 +10,7 @@ import static java.util.Objects.requireNonNull;
 public class User {
 	private String login;
 	private String password;
+	private String role;
 
 	// Constructor needed for the JSON conversion
 	User() {}
@@ -21,9 +22,10 @@ public class User {
 	 * @param password password of the user encoded using SHA-256 and with the
 	 * "salt" prefix added.
 	 */
-	public User(String login, String password) {
+	public User(String login, String password, String role) {
 		this.setLogin(login);
 		this.setPassword(password);
+		this.setRole(role);
 	}
 
 	/**
@@ -64,5 +66,23 @@ public class User {
 			throw new IllegalArgumentException("Password must be a valid SHA-256");
 		
 		this.password = password;
+	}
+	
+	/**
+	 * Returns the role of the user.
+	 * 
+	 * @return the role of the user.
+	 */
+	public String getRole() {
+		return role;
+	}
+
+	/**
+	 * Sets the role of the user.
+	 * 
+	 * @param role the role of the user
+	 */
+	public void setRole(String role) {
+		this.role = requireNonNull(role, "Role can't be null");
 	}
 }
