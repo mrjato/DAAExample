@@ -3,12 +3,14 @@ package es.uvigo.esei.daa.filters;
 import java.io.IOException;
 import java.security.Principal;
 import java.util.Base64;
+import java.util.List;
 
 import javax.annotation.Priority;
 import javax.ws.rs.Priorities;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.PathSegment;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.SecurityContext;
@@ -18,6 +20,12 @@ import es.uvigo.esei.daa.dao.DAOException;
 import es.uvigo.esei.daa.dao.UsersDAO;
 import es.uvigo.esei.daa.entities.User;
 
+/**
+ * This performs the Basic HTTP authentication following (almost) the same
+ * rules as the defined in the web.xml file.
+ * 
+ * @author Miguel Reboiro Jato
+ */
 @Provider
 @Priority(Priorities.AUTHENTICATION)
 public class AuthorizationFilter implements ContainerRequestFilter {
@@ -46,7 +54,11 @@ public class AuthorizationFilter implements ContainerRequestFilter {
 					if (this.dao.checkLogin(userPass[0], userPass[1])) {
 						final User user = this.dao.get(userPass[0]);
 						
-						requestContext.setSecurityContext(new UserSecurityContext(user));
+						if (isPeoplePath(requestContext) && !user.getRole().equals("ADMIN")) {
+							requestContext.abortWith(createResponse());
+						} else {
+							requestContext.setSecurityContext(new UserSecurityContext(user));
+						}
 					} else {
 						requestContext.abortWith(createResponse());
 					}
@@ -57,6 +69,11 @@ public class AuthorizationFilter implements ContainerRequestFilter {
 				requestContext.abortWith(createResponse());
 			}
 		}
+	}
+	
+	private static boolean isPeoplePath(ContainerRequestContext context) {
+		final List<PathSegment> pathSegments = context.getUriInfo().getPathSegments();
+		return !pathSegments.isEmpty() && pathSegments.get(0).getPath().equals("people");
 	}
 	
 	private static Response createResponse() {
