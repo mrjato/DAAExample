@@ -17,13 +17,7 @@ import javax.ws.rs.core.Application;
 import javax.ws.rs.core.Response;
 
 import org.glassfish.jersey.client.ClientConfig;
-import org.glassfish.jersey.server.ResourceConfig;
-import org.glassfish.jersey.servlet.ServletContainer;
-import org.glassfish.jersey.test.DeploymentContext;
 import org.glassfish.jersey.test.JerseyTest;
-import org.glassfish.jersey.test.ServletDeploymentContext;
-import org.glassfish.jersey.test.grizzly.GrizzlyWebTestContainerFactory;
-import org.glassfish.jersey.test.spi.TestContainerFactory;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
@@ -72,20 +66,6 @@ public class UsersResourceTest extends JerseyTest {
 		// Enables JSON transformation in client
 		config.register(JacksonJsonProvider.class);
 		config.property("com.sun.jersey.api.json.POJOMappingFeature", Boolean.TRUE);
-	}
-	
-	@Override
-	protected TestContainerFactory getTestContainerFactory() {
-		return new GrizzlyWebTestContainerFactory();
-	}
-	
-	@Override
-	protected DeploymentContext configureDeployment() {
-		return ServletDeploymentContext.forServlet(
-			new ServletContainer(ResourceConfig.forApplication(configure()))
-		)
-			.servletPath("/rest")
-		.build();
 	}
 	
 	@Test
