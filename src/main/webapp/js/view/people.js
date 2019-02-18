@@ -21,6 +21,9 @@ var PeopleView = (function() {
 				$.each(people, function(key, person) {
 					appendToTable(person);
 				});
+			},
+			function() {
+			    	alert('No has sido posible acceder al listado de personas.');
 			});
 			
 			// La acción por defecto de enviar formulario (submit) se sobreescribe
