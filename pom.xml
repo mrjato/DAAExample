@@ -616,6 +616,7 @@
 							<watches>
 								<watch>
 									<directory>src/main</directory>
+									<exclude>src/main/angular/node_modules</exclude>
 								</watch>
 							</watches>
 							<goals>

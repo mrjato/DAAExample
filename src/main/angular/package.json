@@ -1,6 +1,6 @@
 {
   "name": "daa-example",
-  "version": "0.2.0-alpha.2",
+  "version": "0.2.0-alpha.3",
   "scripts": {
     "ng": "./node_modules/.bin/ng",
     "start": "./node_modules/.bin/ng serve",
