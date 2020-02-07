@@ -58,7 +58,7 @@ export class PeopleMainComponent implements OnInit {
   }
 
   public onCleanForm(): void {
-    this.onCleanForm();
+    this.clearActivePerson();
   }
 
   public onModifyForm(person: PersonModel): void {
