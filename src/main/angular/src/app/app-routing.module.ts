@@ -43,7 +43,7 @@ const routes: Routes = [
       },
       {
         path: 'people',
-        loadChildren: './modules/people/people.module#PeopleModule'
+        loadChildren: () => import('./modules/people/people.module').then(m => m.PeopleModule)
       }
     ]
   }
