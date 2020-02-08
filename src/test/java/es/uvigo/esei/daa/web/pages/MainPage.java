@@ -1,6 +1,5 @@
 package es.uvigo.esei.daa.web.pages;
 
-import static es.uvigo.esei.daa.util.AdditionalConditions.jQueryAjaxCallsHaveCompleted;
 import static java.util.stream.Collectors.toList;
 import static org.openqa.selenium.support.ui.ExpectedConditions.presenceOfElementLocated;
 import static org.openqa.selenium.support.ui.ExpectedConditions.textToBePresentInElement;
@@ -14,6 +13,7 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import es.uvigo.esei.daa.entities.Person;
+import es.uvigo.esei.daa.util.JSWaiter;
 
 public class MainPage {
 	private static final String TABLE_ID = "people-list";
@@ -35,9 +35,9 @@ public class MainPage {
 	}
 
 	public void navigateTo() {
-		this.driver.get(this.baseUrl + "main.html");
+		this.driver.get(this.baseUrl + "#/people");
 		
-	    this.wait.until(presenceOfElementLocated(By.id("people-list")));
+	    this.wait.until(presenceOfElementLocated(By.id(TABLE_ID)));
 	}
 	
 	public int countPeople() {
@@ -87,7 +87,7 @@ public class MainPage {
 		
 		table.deletePerson(id);
 		
-		wait.until(jQueryAjaxCallsHaveCompleted());
+		JSWaiter.wait(driver).untilAngular5Ready();
 	}
 	
 	private final static class PeopleTable {

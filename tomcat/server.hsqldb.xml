@@ -139,9 +139,17 @@
       <Realm className="org.apache.catalina.realm.JDBCRealm"
              driverName="org.hsqldb.jdbc.JDBCDriver"
              connectionURL="jdbc:hsqldb:hsql://localhost/daatestdb?user=sa"
-             userTable="users" userNameCol="login" userCredCol="password"
-             userRoleTable="users" roleNameCol="role" />
-
+             userTable="users"
+             userNameCol="login"
+             userCredCol="password"
+             userRoleTable="users"
+             roleNameCol="role" 
+             digest="SHA-256"
+      >
+             <CredentialHandler className="org.apache.catalina.realm.MessageDigestCredentialHandler"
+                      algorithm="SHA-256"/>
+      </Realm>
+      
       <Host appBase="webapps" autoDeploy="true" name="localhost" unpackWARs="true">
 
         <!-- SingleSignOn valve, share authentication between web applications

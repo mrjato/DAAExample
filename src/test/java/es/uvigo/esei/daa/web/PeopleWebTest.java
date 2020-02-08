@@ -25,7 +25,6 @@ import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.firefox.FirefoxProfile;
 import org.openqa.selenium.html5.LocalStorage;
-import org.openqa.selenium.remote.DesiredCapabilities;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -71,7 +70,7 @@ public class PeopleWebTest {
 		final FirefoxProfile profile = new FirefoxProfile();
 		profile.setPreference("browser.privatebrowsing.autostart", true);
 		
-		final FirefoxOptions options = new FirefoxOptions(DesiredCapabilities.firefox());
+		final FirefoxOptions options = new FirefoxOptions();
 		options.setProfile(profile);
 		
 		final FirefoxDriver firefoxDriver;
@@ -84,7 +83,8 @@ public class PeopleWebTest {
 
 		// Login as "admin:adminpass"
 		final LocalStorage localStorage = firefoxDriver.getLocalStorage();
-		localStorage.setItem("authorization-token", "YWRtaW46YWRtaW5wYXNz");
+		// YWRtaW46YWRtaW5wYXNz
+		localStorage.setItem("user", "{\"login\":\"admin\",\"password\":\"adminpass\"}");
 		
 		mainPage = new MainPage(driver, baseUrl);
 		mainPage.navigateTo();

@@ -17,7 +17,7 @@
   ~ along with this program. If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<table id="list" class="table">
+<table id="people-list" class="table">
   <thead>
   <tr class="row">
     <th class="col-sm-4">Nombre</th>
@@ -26,12 +26,12 @@
   </tr>
   </thead>
   <tbody>
-    <tr *ngFor="let person of people" class="row">
-      <td class="col-sm-4">{{person.name}}</td>
-      <td class="col-sm-5">{{person.surname}}</td>
+    <tr *ngFor="let person of people" class="row" id="person-{{person.id}}">
+      <td class="col-sm-4 name">{{person.name}}</td>
+      <td class="col-sm-5 surname">{{person.surname}}</td>
       <td class="col-sm-3">
-        <button class="btn btn-primary" (click)="onEdit(person)">Edit</button>
-        <button class="btn btn-warning" (click)="onDelete(person)">Delete</button>
+        <button class="btn btn-primary edit" (click)="onEdit(person)">Edit</button>
+        <button class="btn btn-warning delete" (click)="onDelete(person)">Delete</button>
       </td>
     </tr>
   </tbody>
