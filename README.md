@@ -9,7 +9,7 @@ Ingeniería Informática de la Universidad de Vigo.
 La configuración de Maven ha sido preparada para permitir varios tipos de
 ejecución.
 
-### Ejecución de la aplicación con Tomcat y MySQL
+### Ejecución
 
 El proyecto está configurado para poder ejecutar la aplicación sin tener que
 realizar ninguna configuración adicional salvo tener disponible un servidor
@@ -26,21 +26,37 @@ comandos (desde la raíz el proyecto):
 
 Una vez configurada la base de datos podemos lanzar la ejecución con el comando:
 
-`mvn -Prun-tomcat-mysql -DskipTests=true package cargo:run`
+`mvn -Prun package cargo:run`
 
 La aplicación se servirá en la URL local: http://localhost:9080/DAAExample
 
 Para detener la ejecución podemos utilizar `Ctrl+C`.
 
-### Ejecución de la aplicación con Tomcat y MySQL con redespliegue automático
+### Ejecución con redespliegue automático
 
 Durante el desarrollo es interesante que la apliación se redespliegue de forma
 automática cada vez que se hace un cambio. Para ello podemos utilizar el
 siguiente comand:
 
-`mvn -Prun-tomcat-mysql -DskipTests=true package cargo:start fizzed-watcher:run`
+`mvn -Prun package cargo:start fizzed-watcher:run`
 
 La aplicación se servirá en la URL local: http://localhost:9080/DAAExample
+
+Para detener la ejecución podemos utilizar `Ctrl+C`.
+
+### Ejecución con redespliegue automático independiente para backend y frontend (recomendado)
+
+A diferencia del modo de redespliegue automático anterior, en este caso
+*backend* y *frontend* se ejecutarán de forma independiente. Esto hace que los
+cambios en las clases Java harán que se redespliegue el *backend*, mientras que
+los cambios en Angular harán que se redespliegue el *frontend*.
+
+`mvn -Prun-independent-autoredeploy exec:exec@npm-build exec:exec@npm-start package cargo:start fizzed-watcher:run`
+
+La aplicación se servirá en local:
+
+  * **Backend**: http://localhost:9080/DAAExample
+  * **Frontend**: http://localhost:4200
 
 Para detener la ejecución podemos utilizar `Ctrl+C`.
 

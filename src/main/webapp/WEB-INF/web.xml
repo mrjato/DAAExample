@@ -9,13 +9,21 @@
 	<welcome-file-list>
 		<welcome-file>index.html</welcome-file>
 	</welcome-file-list>
-	
+
 	<filter>
 		<filter-name>CorsFilter</filter-name>
 		<filter-class>org.apache.catalina.filters.CorsFilter</filter-class>
 		<init-param>
 			<param-name>cors.allowed.origins</param-name>
 			<param-value>*</param-value>
+		</init-param>
+		<init-param>
+			<param-name>cors.allowed.headers</param-name>
+			<param-value>Authorization</param-value>
+		</init-param>
+		<init-param>
+			<param-name>cors.allowed.methods</param-name>
+			<param-value>GET, POST, DELETE, PUT</param-value>
 		</init-param>
 	</filter>
 	<filter-mapping>
@@ -31,7 +39,6 @@
 			<http-method>DELETE</http-method>
 			<http-method>GET</http-method>
 			<http-method>POST</http-method>
-			<http-method>OPTIONS</http-method>
 		</web-resource-collection>
 		<auth-constraint>
 			<role-name>ADMIN</role-name>
@@ -43,11 +50,10 @@
 		<web-resource-collection>
 			<web-resource-name>Admin Area</web-resource-name>
 			<url-pattern>/rest/people/*</url-pattern>
+			<http-method>GET</http-method>
 			<http-method>PUT</http-method>
 			<http-method>DELETE</http-method>
-			<http-method>GET</http-method>
 			<http-method>POST</http-method>
-			<http-method>OPTIONS</http-method>
 		</web-resource-collection>
 		<auth-constraint>
 			<role-name>ADMIN</role-name>

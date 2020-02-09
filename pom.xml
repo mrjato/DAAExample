@@ -24,6 +24,7 @@
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<project.servers.directory>${project.basedir}/servers</project.servers.directory>
 		<cargo.tomcat.start.skip>false</cargo.tomcat.start.skip>
+		<skip-npm-build>false</skip-npm-build>
 		<cargo.tomcat.run.skip>true</cargo.tomcat.run.skip>
 		<tomcat.version>8.5.27</tomcat.version>
 		<jacoco.port>6300</jacoco.port>
@@ -201,7 +202,6 @@
 				</configuration>
 			</plugin>
 
-
 			<plugin>
 				<artifactId>maven-war-plugin</artifactId>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -247,6 +247,7 @@
 						<id>exec-npm-ng-build</id>
 						<phase>generate-sources</phase>
 						<configuration>
+              <skip>${skip-npm-build}</skip>
 							<workingDirectory>${project.basedir}/src/main/angular</workingDirectory>
 							<executable>npm</executable>
 							<arguments>
@@ -360,6 +361,7 @@
 				</executions>
 			</plugin>
 		</plugins>
+		
 		<pluginManagement>
 			<plugins>
 				<!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
@@ -597,11 +599,12 @@
 		</profile>
 
 		<profile>
-			<id>run-tomcat-mysql</id>
+			<id>run</id>
 			<activation>
 				<activeByDefault>false</activeByDefault>
 			</activation>
 			<properties>
+        <skipTests>true</skipTests>
 				<skip-npm-install>true</skip-npm-install>
 			</properties>
 
@@ -673,6 +676,119 @@
 				</plugins>
 			</build>
 		</profile>
+
+    <profile>
+      <id>run-independent-autoredeploy</id>
+      <activation>
+        <activeByDefault>false</activeByDefault>
+      </activation>
+      <properties>
+        <skipTests>true</skipTests>
+        <skip-npm-install>true</skip-npm-install>
+        <skip-npm-build>true</skip-npm-build>
+      </properties>
+
+      <build>
+        <plugins>
+	        <plugin>
+		        <groupId>org.codehaus.mojo</groupId>
+		        <artifactId>exec-maven-plugin</artifactId>
+		        <version>${exec-maven-plugin.version}</version>
+		        <configuration>
+		            <workingDirectory>${project.basedir}/src/main/angular</workingDirectory>
+		            <executable>npm</executable>
+		            <goal>exec</goal>
+		        </configuration>
+		        <executions>
+		          <execution>
+		            <id>npm-build</id>
+		            <configuration>
+			            <arguments>
+			              <argument>run</argument>
+			              <argument>build</argument>
+			            </arguments>
+		            </configuration>
+		          </execution>
+		          
+              <execution>
+                <id>npm-start</id>
+                <configuration>
+                  <async>true</async>
+                  <asyncDestroyOnShutdown>true</asyncDestroyOnShutdown>
+                  <arguments>
+                    <argument>start</argument>
+                  </arguments>
+                </configuration>
+              </execution>
+		        </executions>
+		      </plugin>
+		      
+          <plugin>
+            <groupId>com.fizzed</groupId>
+            <artifactId>fizzed-watcher-maven-plugin</artifactId>
+            <version>${fizzed-watcher-maven-plugin.version}</version>
+            <configuration>
+              <skipTouch>true</skipTouch>
+              <watches>
+                <watch>
+                  <directory>src/main</directory>
+                  <exclude>src/main/angular</exclude>
+                </watch>
+              </watches>
+              <goals>
+                <goal>package</goal>
+                <goal>cargo:redeploy</goal>
+              </goals>
+            </configuration>
+          </plugin>
+
+          <plugin>
+            <groupId>org.codehaus.cargo</groupId>
+            <artifactId>cargo-maven2-plugin</artifactId>
+            <version>${cargo-maven2-plugin.version}</version>
+            <configuration>
+              <container>
+                <containerId>tomcat8x</containerId>
+                <zipUrlInstaller>
+                  <url>https://repo1.maven.org/maven2/org/apache/tomcat/tomcat/${tomcat.version}/tomcat-${tomcat.version}.zip</url>
+                  <downloadDir>${project.servers.directory}/downloads</downloadDir>
+                  <extractDir>${project.servers.directory}/extracts</extractDir>
+                </zipUrlInstaller>
+                <dependencies>
+                  <dependency>
+                    <groupId>mysql</groupId>
+                    <artifactId>mysql-connector-java</artifactId>
+                  </dependency>
+                </dependencies>
+              </container>
+
+              <configuration>
+                <home>${project.build.directory}/catalina-base</home>
+                <files>
+                  <copy>
+                    <file>tomcat/server.mysql.xml</file>
+                    <tofile>conf/server.xml</tofile>
+                  </copy>
+                </files>
+                <properties>
+                  <cargo.servlet.port>9080</cargo.servlet.port>
+                  <cargo.datasource.datasource.h2>
+                    cargo.datasource.jndi=jdbc/daaexample|
+                    cargo.datasource.driver=com.mysql.jdbc.Driver|
+                    cargo.datasource.url=jdbc:mysql://localhost/daaexample|
+                    cargo.datasource.username=daa|
+                    cargo.datasource.password=daa|
+                    cargo.datasource.maxActive=8|
+                    cargo.datasource.maxIdle=4|
+                    cargo.datasource.maxWait=10000
+                  </cargo.datasource.datasource.h2>
+                </properties>
+              </configuration>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
 
 		<profile>
 			<id>geckodriver-download-unix</id>
