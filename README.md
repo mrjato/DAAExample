@@ -60,6 +60,9 @@ La aplicación se servirá en local:
 
 Para detener la ejecución podemos utilizar `Ctrl+C`.
 
+*Nota*: si accedes a la URL del backend también verás la aplicación de frontend,
+pero no se redesplegará automáticamente con los cambios. 
+
 ### Construcción con tests de unidad e integración
 
 En esta construcción se ejecutarán todos los tests relacionados con el backend:
@@ -73,16 +76,3 @@ memoria.
 El comando para lanzar esta construcción es:
 
 `mvn install`
-
-### Construcción con tests de unidad, integración y aceptación
-
-Esta construcción es similar a la previa, añadiendo las **pruebas de
-aceptación**, que comprueban que las fucionalidades de la aplicación están
-correctamente implementadas.
-
-En estas pruebas se descarga y arranca el un servidor Tomcat 8 en el que se
-despliega la aplicación configurada para utilizar una base de datos HSQL. Las
-pruebas se hacen sobre la interfaz web con Selenium, que iniciará un Firefox
-local de forma automática.
-
-`mvn -Pacceptance-tests-cargo install`
