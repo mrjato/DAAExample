@@ -26,7 +26,7 @@ comandos (desde la raíz el proyecto):
 
 Una vez configurada la base de datos podemos lanzar la ejecución con el comando:
 
-`mvn -Prun-tomcat-mysql -DskipTests=true package cargo:run`
+`mvn -Prun -DskipTests=true package cargo:run`
 
 La aplicación se servirá en la URL local: http://localhost:9080/DAAExample
 
@@ -38,7 +38,7 @@ Durante el desarrollo es interesante que la apliación se redespliegue de forma
 automática cada vez que se hace un cambio. Para ello podemos utilizar el
 siguiente comand:
 
-`mvn -Prun-tomcat-mysql -DskipTests=true package cargo:start fizzed-watcher:run`
+`mvn -Prun -DskipTests=true package cargo:start fizzed-watcher:run`
 
 La aplicación se servirá en la URL local: http://localhost:9080/DAAExample
 
@@ -57,16 +57,3 @@ memoria.
 El comando para lanzar esta construcción es:
 
 `mvn install`
-
-### Construcción con tests de unidad, integración y aceptación
-
-Esta construcción es similar a la previa, añadiendo las **pruebas de
-aceptación**, que comprueban que las fucionalidades de la aplicación están
-correctamente implementadas.
-
-En estas pruebas se descarga y arranca el un servidor Tomcat 8 en el que se
-despliega la aplicación configurada para utilizar una base de datos HSQL. Las
-pruebas se hacen sobre la interfaz web con Selenium, que iniciará un Firefox
-local de forma automática.
-
-`mvn -Pacceptance-tests-cargo install`
