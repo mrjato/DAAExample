@@ -58,7 +58,7 @@ import es.uvigo.esei.daa.web.pages.MainPage;
 @DatabaseSetup("/datasets/dataset.xml")
 @ExpectedDatabase("/datasets/dataset.xml")
 public class PeopleWebTest {
-	private static final int DEFAULT_WAIT_TIME = 1;
+	private static final int DEFAULT_WAIT_TIME = 5;
 	
 	private WebDriver driver;
 	private MainPage mainPage;

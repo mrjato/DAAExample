@@ -26,7 +26,7 @@ comandos (desde la raíz el proyecto):
 
 Una vez configurada la base de datos podemos lanzar la ejecución con el comando:
 
-`mvn -Prun package cargo:run`
+`mvn -Prun clean package cargo:run`
 
 La aplicación se servirá en la URL local: http://localhost:9080/DAAExample
 
@@ -38,7 +38,7 @@ Durante el desarrollo es interesante que la apliación se redespliegue de forma
 automática cada vez que se hace un cambio. Para ello podemos utilizar el
 siguiente comand:
 
-`mvn -Prun package cargo:start fizzed-watcher:run`
+`mvn -Prun clean package cargo:start fizzed-watcher:run`
 
 La aplicación se servirá en la URL local: http://localhost:9080/DAAExample
 
@@ -51,7 +51,7 @@ A diferencia del modo de redespliegue automático anterior, en este caso
 cambios en las clases Java harán que se redespliegue el *backend*, mientras que
 los cambios en Angular harán que se redespliegue el *frontend*.
 
-`mvn -Prun-independent-autoredeploy exec:exec@npm-build exec:exec@npm-start package cargo:start fizzed-watcher:run`
+`mvn -Prun-independent-autoredeploy clean exec:exec@npm-build exec:exec@npm-start package cargo:start fizzed-watcher:run`
 
 La aplicación se servirá en local:
 
@@ -85,4 +85,4 @@ despliega la aplicación configurada para utilizar una base de datos HSQL. Las
 pruebas se hacen sobre la interfaz web con Selenium, que iniciará un Firefox
 local de forma automática.
 
-`mvn -Pacceptance-tests-cargo install`
+`mvn -Pacceptance-tests install`
