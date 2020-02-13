@@ -424,7 +424,7 @@
 				<activeByDefault>false</activeByDefault>
 			</activation>
 			<properties>
-        <skipTests>true</skipTests>
+				<skipTests>true</skipTests>
 				<skip-npm-install>true</skip-npm-install>
 			</properties>
 
@@ -438,8 +438,13 @@
 							<skipTouch>true</skipTouch>
 							<watches>
 								<watch>
-									<directory>src/main</directory>
-									<exclude>src/main/angular/node_modules</exclude>
+									<directory>src/main/java</directory>
+								</watch>
+								<watch>
+									<directory>src/main/webapp</directory>
+								</watch>
+								<watch>
+									<directory>src/main/angular/src</directory>
 								</watch>
 							</watches>
 							<goals>
@@ -551,8 +556,10 @@
               <skipTouch>true</skipTouch>
               <watches>
                 <watch>
-                  <directory>src/main</directory>
-                  <exclude>src/main/angular</exclude>
+                  <directory>src/main/java</directory>
+                </watch>
+                <watch>
+                  <directory>src/main/webapp</directory>
                 </watch>
               </watches>
               <goals>
