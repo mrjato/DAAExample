@@ -2,6 +2,7 @@ package es.uvigo.esei.daa.filters;
 
 import java.io.IOException;
 import java.security.Principal;
+import java.util.Arrays;
 import java.util.Base64;
 import java.util.List;
 
@@ -29,6 +30,9 @@ import es.uvigo.esei.daa.entities.User;
 @Provider
 @Priority(Priorities.AUTHENTICATION)
 public class AuthorizationFilter implements ContainerRequestFilter {
+	// Add here the list of REST paths that an administrator can access.
+	private final static List<String> ADMIN_PATHS = Arrays.asList("people");
+	
 	private final UsersDAO dao;
 
 	public AuthorizationFilter() {
@@ -54,7 +58,7 @@ public class AuthorizationFilter implements ContainerRequestFilter {
 					if (this.dao.checkLogin(userPass[0], userPass[1])) {
 						final User user = this.dao.get(userPass[0]);
 						
-						if (isPeoplePath(requestContext) && !user.getRole().equals("ADMIN")) {
+						if (isAdminPath(requestContext) && !user.getRole().equals("ADMIN")) {
 							requestContext.abortWith(createResponse());
 						} else {
 							requestContext.setSecurityContext(new UserSecurityContext(user));
@@ -71,9 +75,15 @@ public class AuthorizationFilter implements ContainerRequestFilter {
 		}
 	}
 	
-	private static boolean isPeoplePath(ContainerRequestContext context) {
+	private static boolean isAdminPath(ContainerRequestContext context) {
 		final List<PathSegment> pathSegments = context.getUriInfo().getPathSegments();
-		return !pathSegments.isEmpty() && pathSegments.get(0).getPath().equals("people");
+		
+		if (pathSegments.isEmpty()) {
+			return false;
+		} else {
+			final String path = pathSegments.get(0).getPath();
+			return ADMIN_PATHS.contains(path);
+		}
 	}
 	
 	private static Response createResponse() {
