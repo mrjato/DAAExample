@@ -5,7 +5,7 @@
 	<groupId>es.uvigo.esei.daa</groupId>
 	<artifactId>example</artifactId>
 	<packaging>war</packaging>
-	<version>0.1.18</version>
+	<version>0.1.19</version>
 	<name>DAA Example</name>
 
 	<licenses>
@@ -35,7 +35,7 @@
 		<slf4j-jdk14.version>1.7.21</slf4j-jdk14.version>
 
 		<!-- Tests dependencies -->
-		<junit.version>4.12</junit.version>
+		<junit.version>4.13.2</junit.version>
 		<java-hamcrest.version>2.0.0.0</java-hamcrest.version>
 		<easymock.version>3.5.1</easymock.version>
 		<selenium-java.version>3.141.59</selenium-java.version>
@@ -48,6 +48,7 @@
 
 		<!-- Plugins -->
 		<maven-failsafe-plugin.version>2.20.1</maven-failsafe-plugin.version>
+		<maven-jxr-plugin>3.0.0</maven-jxr-plugin>
 		<maven-surefire-plugin.version>2.20.1</maven-surefire-plugin.version>
 		<maven-surefire-report-plugin.version>2.20.1</maven-surefire-report-plugin.version>
 		<maven-war-plugin.version>3.2.0</maven-war-plugin.version>
@@ -182,6 +183,16 @@
 			<version>${equalsverifier.version}</version>
 		</dependency>
 	</dependencies>
+
+	<reporting>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jxr-plugin</artifactId>
+				<version>${maven-jxr-plugin.version}</version>
+			</plugin>
+		</plugins>
+	</reporting>
 
 	<build>
 		<finalName>DAAExample</finalName>
@@ -394,7 +405,7 @@
 									<cargo.datasource.datasource.h2>
 										cargo.datasource.jndi=jdbc/daaexample|
 										cargo.datasource.driver=com.mysql.jdbc.Driver|
-										cargo.datasource.url=jdbc:mysql://localhost/daaexample|
+										cargo.datasource.url=jdbc:mysql://localhost/daaexample?useSSL=false|
 										cargo.datasource.username=daa|
 										cargo.datasource.password=daa|
 										cargo.datasource.maxActive=8|
