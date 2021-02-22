@@ -138,7 +138,7 @@
 
       <Realm className="org.apache.catalina.realm.JDBCRealm"
              driverName="com.mysql.jdbc.Driver"
-             connectionURL="jdbc:mysql://localhost/daaexample"
+             connectionURL="jdbc:mysql://localhost/daaexample?useSSL=false"
              connectionName="daa"
              connectionPassword="daa"
              userTable="users" userNameCol="login" userCredCol="password"

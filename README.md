@@ -5,6 +5,16 @@ Aplicación y arquitectura de ejemplo para la asignatura Desarrollo Ágil de
 Aplicaciones del Grado en Ingeniería Informática de la Escuela Superior de
 Ingeniería Informática de la Universidad de Vigo.
 
+## Dependencias
+Este proyecto está diseñado para ser desarrollado en un entorno con:
+
+* Maven 3
+* Java 8
+* MySQL 5.7.6+ o 8+
+
+Además, se recomienda emplear la última versión de Eclipse IDE for Enterprise
+Java Developers.
+
 ## Ejecución con Maven
 La configuración de Maven ha sido preparada para permitir varios tipos de
 ejecución.
@@ -60,9 +70,9 @@ El comando para lanzar esta construcción es:
 
 ### Construcción con tests de unidad, integración y aceptación
 
-Esta construcción es similar a la previa, añadiendo las **pruebas de
-aceptación**, que comprueban que las fucionalidades de la aplicación están
-correctamente implementadas.
+Esta construcción es similar a la previa, añadiendo las
+**pruebas de aceptación**, que comprueban que las fucionalidades de la aplicación
+están correctamente implementadas.
 
 En estas pruebas se descarga y arranca el un servidor Tomcat 8 en el que se
 despliega la aplicación configurada para utilizar una base de datos HSQL. Las

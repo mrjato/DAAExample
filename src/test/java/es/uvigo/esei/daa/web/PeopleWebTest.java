@@ -10,7 +10,7 @@ import static es.uvigo.esei.daa.matchers.IsEqualToPerson.containsPeopleInAnyOrde
 import static es.uvigo.esei.daa.matchers.IsEqualToPerson.equalsToPerson;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.util.concurrent.TimeUnit;
 
