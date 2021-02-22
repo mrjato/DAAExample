@@ -8,7 +8,7 @@ import static es.uvigo.esei.daa.matchers.HasHttpStatus.hasOkStatus;
 import static es.uvigo.esei.daa.matchers.HasHttpStatus.hasUnauthorized;
 import static es.uvigo.esei.daa.matchers.IsEqualToUser.equalsToUser;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.io.IOException;
 

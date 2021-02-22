@@ -5,6 +5,16 @@ Aplicación y arquitectura de ejemplo para la asignatura Desarrollo Ágil de
 Aplicaciones del Grado en Ingeniería Informática de la Escuela Superior de
 Ingeniería Informática de la Universidad de Vigo.
 
+## Dependencias
+Este proyecto está diseñado para ser desarrollado en un entorno con:
+
+* Maven 3
+* Java 8
+* MySQL 5.7.6+ o 8+
+
+Además, se recomienda emplear la última versión de Eclipse IDE for Enterprise
+Java Developers.
+
 ## Ejecución con Maven
 La configuración de Maven ha sido preparada para permitir varios tipos de
 ejecución.

@@ -18,7 +18,7 @@ import static es.uvigo.esei.daa.matchers.IsEqualToPerson.equalsToPerson;
 import static javax.ws.rs.client.Entity.entity;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.io.IOException;
 import java.util.List;
