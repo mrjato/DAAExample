@@ -12,7 +12,7 @@ import static es.uvigo.esei.daa.dataset.PeopleDataset.peopleWithout;
 import static es.uvigo.esei.daa.matchers.IsEqualToPerson.containsPeopleInAnyOrder;
 import static es.uvigo.esei.daa.matchers.IsEqualToPerson.equalsToPerson;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 import javax.sql.DataSource;
 
